@@ -16,7 +16,7 @@ concurrency:
 
 env:
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-  DNSCONTROL_IMAGE: ghcr.io/dnscontrol/dnscontrol:v5.2.0
+  DNSCONTROL_IMAGE: ghcr.io/dnscontrol/dnscontrol:5.2.0
 
 jobs:
   preview:

@@ -265,7 +265,7 @@ jobs:
       # Same image used locally; 🔧 pin a version tag (v5.2.0 at time of writing)
       - name: Install DNSControl
         run: |
-          printf '#!/bin/sh\n%s\n' 'exec docker run --rm -e CLOUDFLARE_API_TOKEN -v "$PWD:/dns" ghcr.io/dnscontrol/dnscontrol:v5.2.0 "$@"' \
+          printf '#!/bin/sh\n%s\n' 'exec docker run --rm -e CLOUDFLARE_API_TOKEN -v "$PWD:/dns" ghcr.io/dnscontrol/dnscontrol:5.2.0 "$@"' \
             | sudo tee /usr/local/bin/dnscontrol >/dev/null
           sudo chmod +x /usr/local/bin/dnscontrol
 
