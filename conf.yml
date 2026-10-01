@@ -11,7 +11,7 @@
 title: "marso.ar"
 description: "Leandro's personal page"
 url: "https://marso.ar"
-footer: "© marso.ar"
+footer: "© marso.ar - Built with <a href='https://nicolino.ralsina.me/'>Nicolino</a>"
 
 # Localization options
 date_output_format: "%Y-%m-%d %H:%M"

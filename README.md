@@ -23,6 +23,7 @@ code. GitHub Actions builds and deploys the site and applies DNS changes.
 | GitHub **verified domain** (TXT `_github-pages-challenge-3ll34ndr0`) | ⏳ TODO: get value from account Settings → Pages |
 | Home page: GitHub heatmap panel + contact/CV/links panel | ✅ built, contact data filled in; ⏳ add `assets/cv.pdf` |
 | Home page: Claude Code usage panel (under the heatmap) | ✅ built; refresh with `make usage` + commit |
+| Home page: Posts panel (under Contact) | ✅ latest 5 posts + link to `/posts/` |
 | Real content, theme, language | ⏳ TODO (see §8) |
 
 ## 2. Decisions made
@@ -90,7 +91,8 @@ Details:
 ├── .nicolino-version       ← pinned Nicolino version used by CI and locally
 ├── scripts/
 │   ├── contributions.py    ← GitHub heatmap → inline SVG (run at build time)
-│   └── claude_usage.py     ← export: ~/.claude logs → data/ (local) · render: panel (build time)
+│   ├── claude_usage.py     ← export: ~/.claude logs → data/ (local) · render: panel (build time)
+│   └── posts_list.py       ← latest posts for the home page (build time)
 ├── data/
 │   └── claude-usage.json   ← daily Claude Code usage per model (committed)
 ├── Makefile                ← make usage | preview | build | clean (local helpers)
@@ -133,8 +135,20 @@ git commit -am "new post" && git push      # CI builds and deploys
   `{{< shell "python3 scripts/contributions.py 3ll34ndr0" >}}`. Styles/colors are in
   `assets/css/custom.css` (`.gh-*`, `--gh-l0…4`).
 - ⚠️ Locally, Nicolino's incremental build **won't re-run the heatmap** unless
-  `content/index.md` changes. Run `nicolino clean && nicolino build` to refresh it.
+  `content/index.md` changes. Run `make clean && nicolino build` (or `make preview`) to refresh it.
   CI always builds from scratch.
+
+### Write a post
+
+```bash
+nicolino new content/posts/my-post.md     # or create the file by hand
+```
+
+Front matter: `title`, `date` (add a time, e.g. `2026-10-02 18:30`, to order
+same-day posts), `tags`, and optionally `draft: true` to keep it off the home-page
+list. The **Posts** panel (`scripts/posts_list.py`) shows the latest 5 posts, newest first,
+linking to `/posts/<file-name>.html`, plus "All posts (N) →" → `/posts/`.
+Pushing a new post rebuilds the site. Locally, run `make preview` (clean build) to see it in the panel.
 
 ### Claude Code usage panel
 
@@ -199,7 +213,8 @@ DNSControl v5 syntax is `get-zones <credkey> <zone>`; v4 also took a provider ar
 | `dns` job exit code **125** | Image tag `v5.2.0` doesn't exist | Use `5.2.0` |
 | GitHub: "DNS check unsuccessful … NotServedByPagesError" | DNS job had failed, so no records existed | Fixed the job, records pushed |
 | GitHub: "www.marso.ar is improperly configured" while `dig` shows the CNAME | Resolvers cached the earlier NXDOMAIN (Cloudflare SOA negative TTL = 1800 s) | Wait ~30 min, then "Check again" in Pages settings |
-| Heatmap stale / old layout locally after editing `scripts/contributions.py` | Incremental build cached the page | `nicolino clean && nicolino build` |
+| Heatmap stale / old layout locally after editing `scripts/contributions.py` | Incremental build cached the page; `nicolino clean` alone keeps the cache (`.kvstore`, `.croupier`) | `make clean && nicolino build` (or `make preview`) |
+| Deleted post still listed in the home Posts panel | Same cache, holding the old shortcode output | `make clean` |
 | `dns/imported.js` owned by root | Docker writes as root | Add `--user "$(id -u):$(id -g)"` |
 
 ## 8. Still open 🔧

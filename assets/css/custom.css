@@ -17,7 +17,8 @@
 @media (max-width: 900px) {
   .home-grid { grid-template-columns: minmax(0, 1fr); }
 }
-.home-main { display: flex; flex-direction: column; gap: var(--pico-spacing, 1rem); min-width: 0; }
+.home-main, .home-side { display: flex; flex-direction: column; gap: var(--pico-spacing, 1rem); min-width: 0; }
+.home-side > article { margin: 0; }
 .home-main > article, .home-grid > article { margin: 0; }
 .panel > header { margin-bottom: var(--pico-spacing, 1rem); }
 .contact-list, .profile-links { list-style: none; padding: 0; }
@@ -106,3 +107,11 @@
 .flow-edge-label { font-size: 11px; font-weight: 600; fill: var(--flow-muted); }
 .flow .flow-edge-label-left { text-anchor: end; }
 .flow .flow-lane-label { text-anchor: start; }
+
+/* ---------- Posts panel (scripts/posts_list.py) ---------- */
+.posts-list { list-style: none; padding: 0; margin: 0; }
+.posts-list li { list-style: none; padding: .5rem 0; border-bottom: 1px solid var(--pico-muted-border-color, #383838); }
+.posts-list li:first-child { padding-top: 0; }
+.posts-list a { display: block; }
+.posts-list time { display: block; font-size: .8rem; color: var(--pico-muted-color, #888); }
+.posts-more { margin: .75rem 0 0; font-size: .9rem; }

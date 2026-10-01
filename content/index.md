@@ -18,6 +18,8 @@ title: ""
 
 </div>
 
+<div class="home-side">
+
 <article class="panel panel-contact">
 <header><strong>Contact</strong></header>
 <ul class="contact-list">
@@ -30,5 +32,12 @@ title: ""
 <li><a href="https://www.linkedin.com/in/leandromarso/">LinkedIn</a></li>
 </ul>
 </article>
+
+<article class="panel panel-posts">
+<header><strong>Posts</strong></header>
+{{< shell "python3 scripts/posts_list.py --limit 5" >}}
+</article>
+
+</div>
 
 </div>
