@@ -13,10 +13,14 @@ on:
       - "user_templates/**"
       - "conf.yml"
       - "conf.*.yml"
+      - "scripts/**"
       - ".nicolino-version"
       - ".github/workflows/site.yml"
   pull_request:
     paths: *site_paths
+  # Daily rebuild so the GitHub heatmap on the home page stays current
+  schedule:
+    - cron: "17 6 * * *"   # 06:17 UTC = 03:17 Argentina
   workflow_dispatch:
 
 permissions:

@@ -6,3 +6,46 @@
  */
 
 /* Add your custom CSS below */
+
+/* ---------- Home: panels ---------- */
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
+  gap: var(--pico-spacing, 1rem);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .home-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.panel > header { margin-bottom: var(--pico-spacing, 1rem); }
+.contact-list, .profile-links { list-style: none; padding: 0; }
+.contact-list li, .profile-links li { list-style: none; }
+.panel-contact [role="button"] { width: 100%; }
+.profile-links { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-bottom: 0; }
+
+/* ---------- GitHub contribution heatmap (scripts/contributions.py) ---------- */
+.gh-contrib { margin: 0; }
+.gh-scroll { overflow-x: auto; direction: rtl; } /* rtl: start scrolled to the newest weeks */
+.gh-heatmap { direction: ltr; width: 100%; min-width: 560px; height: auto; display: block; }
+.gh-heatmap text { font-size: 9px; fill: var(--pico-muted-color, #888); }
+.gh-contrib figcaption {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem;
+  margin-top: .5rem; font-size: .8rem; color: var(--pico-muted-color, #888);
+}
+.gh-legend i {
+  display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+  vertical-align: middle; margin: 0 1px;
+}
+/* GitHub's palette; dark theme is the site default */
+:root, [data-theme="dark"] {
+  --gh-l0: #161b22; --gh-l1: #0e4429; --gh-l2: #006d32; --gh-l3: #26a641; --gh-l4: #39d353;
+}
+[data-theme="light"] {
+  --gh-l0: #ebedf0; --gh-l1: #9be9a8; --gh-l2: #40c463; --gh-l3: #30a14e; --gh-l4: #216e39;
+}
+.gh-heatmap .l0, .gh-legend .l0 { fill: var(--gh-l0); background: var(--gh-l0); }
+.gh-heatmap .l1, .gh-legend .l1 { fill: var(--gh-l1); background: var(--gh-l1); }
+.gh-heatmap .l2, .gh-legend .l2 { fill: var(--gh-l2); background: var(--gh-l2); }
+.gh-heatmap .l3, .gh-legend .l3 { fill: var(--gh-l3); background: var(--gh-l3); }
+.gh-heatmap .l4, .gh-legend .l4 { fill: var(--gh-l4); background: var(--gh-l4); }
+.gh-heatmap rect { outline: 1px solid rgba(127,127,127,.12); outline-offset: -1px; }
