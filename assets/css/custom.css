@@ -73,3 +73,36 @@
   font-size: .75rem; color: var(--pico-muted-color, #888); margin-top: .25rem;
 }
 .cu-mix, .cu-note { font-size: .8rem; color: var(--pico-muted-color, #888); margin: .5rem 0 0; }
+
+/* ---------- Flow diagram (posts/how-this-site-is-built) ---------- */
+:root, [data-theme="dark"] {
+  --flow-node: #232323; --flow-border: #444; --flow-text: #e8e8e8; --flow-muted: #a0a0a0;
+  --flow-site: #3987e5; --flow-dns: #e8833a; --flow-edge: #8a8a8a;
+}
+[data-theme="light"] {
+  --flow-node: #ffffff; --flow-border: #cfcfcf; --flow-text: #282828; --flow-muted: #5c5c5c;
+  --flow-site: #2a78d6; --flow-dns: #c9661c; --flow-edge: #8a8a8a;
+}
+.flow { overflow-x: auto; margin: 1.5rem 0 2rem; }
+.flow svg { display: block; width: 100%; min-width: 640px; height: auto; font-family: inherit; }
+.flow-lane { stroke-width: 1; }
+.flow-lane-site { fill: color-mix(in srgb, var(--flow-site) 9%, transparent); stroke: color-mix(in srgb, var(--flow-site) 35%, transparent); }
+.flow-lane-dns { fill: color-mix(in srgb, var(--flow-dns) 9%, transparent); stroke: color-mix(in srgb, var(--flow-dns) 35%, transparent); }
+.flow-lane-label { font-size: 10px; letter-spacing: .12em; font-weight: 700; fill: var(--flow-muted); }
+.flow-node rect { fill: var(--flow-node); stroke: var(--flow-border); stroke-width: 1.2; }
+.flow-node-site rect { stroke: var(--flow-site); stroke-width: 1.6; }
+.flow-node-dns rect { stroke: var(--flow-dns); stroke-width: 1.6; }
+.flow-node-repo rect { stroke: var(--flow-text); stroke-width: 1.6; }
+.flow-pill rect { stroke-dasharray: 4 3; }
+.flow text { text-anchor: middle; }
+.flow-title { font-size: 15px; font-weight: 700; fill: var(--flow-text); }
+.flow-sub { font-size: 11.5px; fill: var(--flow-muted); }
+.flow-url { fill: var(--flow-site); font-weight: 600; }
+.flow-edge { fill: none; stroke: var(--flow-edge); stroke-width: 2; }
+.flow-edge-site { stroke: var(--flow-site); }
+.flow-edge-dns { stroke: var(--flow-dns); }
+.flow-edge-dashed { stroke-dasharray: 5 4; }
+.flow-arrowhead { fill: context-stroke; }
+.flow-edge-label { font-size: 11px; font-weight: 600; fill: var(--flow-muted); }
+.flow .flow-edge-label-left { text-anchor: end; }
+.flow .flow-lane-label { text-anchor: start; }
