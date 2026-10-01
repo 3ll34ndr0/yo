@@ -1,10 +1,22 @@
 name: site
+# Only rebuild when something Nicolino reads changes (allow-list).
+# Keep this list in sync between push and pull_request.
 on:
   push:
     branches: [main]
-    paths-ignore: ["dns/**", ".github/workflows/dns.yml", "README.md"]
+    paths: &site_paths
+      - "content/**"
+      - "assets/**"
+      - "themes/**"
+      - "shortcodes/**"
+      - "templates/**"
+      - "user_templates/**"
+      - "conf.yml"
+      - "conf.*.yml"
+      - ".nicolino-version"
+      - ".github/workflows/site.yml"
   pull_request:
-    paths-ignore: ["dns/**", ".github/workflows/dns.yml", "README.md"]
+    paths: *site_paths
   workflow_dispatch:
 
 permissions:

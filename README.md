@@ -1,368 +1,177 @@
 # marso.ar — personal site
 
 Personal page built with [Nicolino](https://nicolino.ralsina.me/), hosted on
-GitHub Pages at **https://marso.ar**. DNS lives in Cloudflare. GitHub Actions
-handles the site build and the DNS records.
+GitHub Pages at **https://marso.ar**. DNS lives in Cloudflare and is managed as
+code. GitHub Actions builds and deploys the site and applies DNS changes.
 
-> **Status (2026-10-01):** Phase 0 done locally (site scaffolded, `dns/dnsconfig.js`
-> with imported records, real workflows in `.github/workflows/`). Next: create the
-> GitHub repo `3ll34ndr0/yo` (created) and push. Workflow snippets below are the
-> original drafts; the files in `.github/workflows/` are authoritative.
-> Everything else is still a proposal to tune. Items marked **🔧 TUNE** are decisions for you to make. Items marked
-> **✋ MANUAL** are one-time steps that can't be automated (or aren't worth it).
+- Repo: https://github.com/3ll34ndr0/yo
+- Live: https://marso.ar (`www.marso.ar` redirects to the apex)
 
 ---
 
-## 1. Goals
+## 1. Status (2026-10-01)
 
-| # | Goal | How |
-|---|------|-----|
-| 1 | Static personal site, easy to write (Markdown) | Nicolino |
-| 2 | Hosted free, no servers to maintain | GitHub Pages |
-| 3 | Served at the apex domain `marso.ar` (plus `www`) | GitHub Pages custom domain + Cloudflare DNS |
-| 4 | Site builds in CI, never on my laptop | GitHub Actions workflow `site.yml` |
-| 5 | DNS as code: changes reviewed in PRs, applied by CI | GitHub Actions workflow `dns.yml` + DNSControl |
+| Item | State |
+|------|-------|
+| Nicolino site scaffolded (placeholder home / about / one post) | ✅ |
+| `site` workflow: build + deploy to GitHub Pages | ✅ running |
+| `dns` workflow: DNSControl preview + push to Cloudflare | ✅ running (first run failed on a wrong image tag, fixed in `f071ca8`) |
+| Apex `marso.ar` → GitHub Pages (A/AAAA) | ✅ live, served by GitHub over HTTPS |
+| `www.marso.ar` → CNAME `3ll34ndr0.github.io` | ✅ in DNS; ⏳ GitHub's check was failing on cached NXDOMAIN (30 min negative TTL), re-check |
+| Pages custom domain `marso.ar` set in repo settings | ✅ |
+| **Enforce HTTPS** ticked | ⏳ after the `www` check passes |
+| GitHub **verified domain** (TXT `_github-pages-challenge-3ll34ndr0`) | ⏳ TODO: get value from account Settings → Pages |
+| Real content, theme, language | ⏳ TODO (see §8) |
 
-## 2. Feasibility (checked 2026-09-29)
+## 2. Decisions made
 
-- **Nicolino in GitHub Actions: yes.** Upstream publishes a **static Linux
-  binary** (`nicolino-static-linux-amd64`, latest `v0.27.0`). I downloaded it,
-  ran `nicolino init` and `nicolino build` on a sample site, and the build took
-  under a second. No Crystal toolchain or compile step is needed. The upstream
-  docs say the static build is slower than a source build, but that doesn't
-  matter at this size.
-  - ⚠️ **Gotcha found:** the default `conf.yml` from `nicolino init` enables the
-    `pandoc` feature. If `pandoc` isn't installed, the build **aborts**. There
-    are two fixes: remove `pandoc` from `features:`, or run `apt-get install pandoc`
-    in CI. The first one is the plan, because Markdown doesn't need pandoc.
-  - Nicolino says it is "still in development and may change suddenly in
-    places like the configuration file format". The plan **pins the
-    version** in CI and only bumps it on purpose.
-- **GitHub Pages at the apex `marso.ar`: yes.** GitHub Pages supports apex
-  domains through A/AAAA records. It issues the HTTPS certificate itself (Let's Encrypt).
-- **Cloudflare DNS from GitHub Actions: yes.** A scoped Cloudflare API token
-  stored as a repo secret, plus a declarative DNS tool (see §5).
+| Topic | Decision | Why |
+|-------|----------|-----|
+| Generator | **Nicolino**, pinned in `.nicolino-version` (currently `v0.27.0`) | Markdown, fast, and upstream ships a static Linux binary, so CI needs no compile step. Pinned because upstream warns that the config format may change |
+| Nicolino features | Default set **minus `pandoc`** | `pandoc` is on by default and the build **aborts** without it. Markdown doesn't need it |
+| Hosting | **GitHub Pages**, source = **GitHub Actions** (no `gh-pages` branch) | Free, nothing to maintain, no build output committed |
+| Repo | **`3ll34ndr0/yo`**, public | Pages on a private repo needs a paid plan. With a custom domain the repo name doesn't matter |
+| Domain | Apex **`marso.ar`** is canonical; `www` → CNAME → redirects to apex | |
+| DNS as code | **DNSControl**, run from its Docker image `ghcr.io/dnscontrol/dnscontrol:5.2.0` | Single JS file, `preview` before `push`, **no state file** (unlike Terraform/OpenTofu) |
+| Cloudflare proxy for Pages records | **DNS-only (grey cloud)** | GitHub has to see its own IPs to issue and renew the Let's Encrypt cert. GitHub already serves through a CDN |
+| Existing records | **Imported** (2026-10-01) and kept as-is in `dns/dnsconfig.js` | DNSControl deletes anything not declared. The zone had 7 A + 2 SRV on subdomains, no apex, no MX |
+| DNS approval gate | `push` job runs in environment **`dns-prod`** | Add a required reviewer there so DNS changes need a click |
+| Secrets | `CLOUDFLARE_API_TOKEN` as a **repository** secret (both DNS jobs use it). Locally it's in `.env`, which is **git-ignored** | Token scope: `Zone → DNS → Edit` on `marso.ar` only |
 
-## 3. Architecture
+## 3. How it works
 
 ```
-            push to main (content/, conf.yml, assets/…)
- ┌──────────┐        ┌───────────────────────────────┐        ┌──────────────┐
- │  GitHub  │ ─────▶ │ Actions: site.yml             │ ─────▶ │ GitHub Pages │
- │  repo    │        │  download nicolino (pinned)   │ deploy │  marso.ar    │
- │          │        │  nicolino build → output/     │        └──────▲───────┘
- │          │        └───────────────────────────────┘               │ A/AAAA/CNAME
- │          │   PR / push touching dns/                              │
- │          │ ─────▶ ┌───────────────────────────────┐        ┌──────┴───────┐
- └──────────┘        │ Actions: dns.yml              │ ─────▶ │ Cloudflare   │
-                     │  PR: dnscontrol preview       │  API   │ zone marso.ar│
-                     │  main: dnscontrol push        │        └──────────────┘
-                     └───────────────────────────────┘
+ push to main                       ┌──────────────────────────────┐     ┌──────────────┐
+ touching site paths  ───────────▶  │ site.yml                     │ ──▶ │ GitHub Pages │
+ (content/, conf.yml, themes/ …)    │  install pinned nicolino     │     │  marso.ar    │
+                                    │  nicolino build → output/    │     └──────▲───────┘
+                                    └──────────────────────────────┘            │
+ push to main / PR                  ┌──────────────────────────────┐     ┌──────┴───────┐
+ touching dns/  ──────────────────▶ │ dns.yml                      │ ──▶ │ Cloudflare   │
+                                    │  preview: check + preview    │ API │ zone marso.ar│
+                                    │  push (main only, dns-prod)  │     └──────────────┘
+                                    └──────────────────────────────┘
 ```
 
-## 4. Repository layout (proposed)
+### When does CI run?
+
+| You change… | `site` | `dns` |
+|-------------|:------:|:-----:|
+| `content/**`, `assets/**`, `themes/**`, `shortcodes/**`, `templates/**`, `user_templates/**`, `conf.yml`, `conf.*.yml`, `.nicolino-version`, `site.yml` | ✅ build (+ deploy on `main`) | — |
+| `dns/**`, `dns.yml` | — | ✅ preview (+ push on `main`) |
+| Anything else: `README.md`, `.gitignore`, … | — | — |
+
+Details:
+- `site` uses an **allow-list** (`paths:`), so new non-site files never trigger a deploy.
+  If you add a new folder Nicolino reads, add it to the list in `site.yml`.
+- On **pull requests** both workflows run, but only to build or preview. Nothing is deployed or pushed.
+- **Mixed commits** (e.g. content + DNS) trigger both workflows.
+- Both workflows can be started by hand from the Actions tab (`workflow_dispatch`).
+- Put `[skip ci]` in a commit message to skip all workflows for that push.
+- Edge case: if a push's diff has more than 300 files, GitHub can't evaluate path filters
+  and runs the workflow anyway.
+
+## 4. Repository layout
 
 ```
 .
-├── README.md               ← this file
-├── conf.yml                ← Nicolino config (title, url: https://marso.ar, features…)
+├── conf.yml                ← Nicolino config (title, url, features…)
+├── .nicolino-version       ← pinned Nicolino version used by CI and locally
 ├── content/
-│   ├── index.md            ← 🔧 TUNE: home page (or let posts be the home)
+│   ├── index.md            ← home page → /
 │   ├── about.md            ← → /about.html
-│   ├── posts/              ← blog posts (optional)
-│   └── galleries/          ← photo galleries (optional)
-├── assets/                 ← copied as-is to the site root (css/, images, favicon…)
-├── shortcodes/             ← generated by `nicolino init`
-├── themes/default/         ← generated by `nicolino init`; customise or replace
+│   ├── posts/              ← blog posts → /posts/…
+│   └── galleries/          ← photo galleries
+├── assets/                 ← copied as-is to the site root
+├── shortcodes/, themes/    ← generated by `nicolino init`; customise freely
 ├── dns/
-│   ├── dnsconfig.js        ← DNS records for marso.ar (source of truth)
-│   └── creds.json          ← references env vars only, no secrets
+│   ├── dnsconfig.js        ← DNS for marso.ar: SOURCE OF TRUTH
+│   └── creds.json          ← points to $CLOUDFLARE_API_TOKEN, no secrets
 ├── .github/workflows/
-│   ├── site.yml            ← build + deploy site
-│   └── dns.yml             ← preview/apply DNS
-├── .nicolino-version       ← pinned Nicolino version, e.g. v0.27.0
-└── .gitignore              ← output/, .kv.db and other build caches
+│   ├── site.yml
+│   └── dns.yml
+└── .env                    ← local only, git-ignored (CLOUDFLARE_API_TOKEN)
 ```
 
-What `nicolino init` created in my test run: `conf.yml`, `content/{posts,galleries}`,
-`assets/css/custom.css`, `shortcodes/*.tmpl`, `themes/default/`. What `nicolino build`
-wrote to `output/`: `index.html`, `about.html`, `posts/…`, `rss.xml`, `sitemap.xml`,
-`search.json` and `tags/…`.
+## 5. Everyday use
 
-## 5. DNS as code — tool choice
-
-🔧 **TUNE.** The options:
-
-| Tool | Pros | Cons |
-|------|------|------|
-| **DNSControl** (recommended) | One JS file. `preview` fits PR comments well and `push` applies on merge. **No state file.** Maintained by Stack Exchange, with first-class Cloudflare support | Manages DNS records, not other Cloudflare zone settings |
-| Terraform / OpenTofu + Cloudflare provider | Can also manage zone settings (SSL mode, Always-HTTPS, page rules…) | Needs **remote state** (R2/S3/Terraform Cloud) and more boilerplate for a single zone |
-| octoDNS | YAML, similar to DNSControl | More Python setup; less common with Cloudflare |
-
-The plan uses **DNSControl** for records. If you later want Cloudflare zone
-*settings* as code too, add a small OpenTofu stack next to it, with state in a
-Cloudflare R2 bucket.
-
-### ⚠️ Import the existing zone first
-
-DNSControl is authoritative: **records that aren't declared get deleted on
-`push`**. Before the first push:
-
-1. Dump what's there today (MX, SPF/DKIM, verification TXT records, etc.).
-   This uses DNSControl v5 syntax (`get-zones <credkey> <zone>`); v4's
-   provider argument is gone:
-   ```bash
-   read -rs CLOUDFLARE_API_TOKEN && export CLOUDFLARE_API_TOKEN   # paste token, not echoed
-   docker run --rm -e CLOUDFLARE_API_TOKEN -v "$PWD/dns:/dns" \
-     ghcr.io/dnscontrol/dnscontrol get-zones --format=js --out=imported.js cloudflare marso.ar
-   ```
-   Run it from the repo root. The container's workdir is `/dns`, so it reads
-   `dns/creds.json` and writes `dns/imported.js`.
-2. Paste the output into `dns/dnsconfig.js`, then add the GitHub Pages records.
-3. The first `preview` should show **only** the changes you expect.
-
-If you'd rather keep some records managed by hand in the dashboard, use
-`NO_PURGE` on the domain or `IGNORE(...)` for specific names.
-
-### Draft `dns/dnsconfig.js`
-
-```js
-var REG_NONE = NewRegistrar("none");
-var CF = NewDnsProvider("cloudflare");
-
-var GH_USER = "CHANGEME"; // 🔧 your GitHub username
-
-D("marso.ar", REG_NONE, DnsProvider(CF),
-  DefaultTTL(1), // 1 = "auto" in Cloudflare
-
-  // --- GitHub Pages (apex) ---
-  // Keep these DNS-only (grey cloud). See §7.
-  A("@", "185.199.108.153"),
-  A("@", "185.199.109.153"),
-  A("@", "185.199.110.153"),
-  A("@", "185.199.111.153"),
-  AAAA("@", "2606:50c0:8000::153"),
-  AAAA("@", "2606:50c0:8001::153"),
-  AAAA("@", "2606:50c0:8002::153"),
-  AAAA("@", "2606:50c0:8003::153"),
-
-  // --- www → redirects to apex (GitHub handles the redirect) ---
-  CNAME("www", GH_USER + ".github.io."),
-
-  // --- GitHub Pages domain verification (anti-takeover) ---
-  // Value comes from GitHub → Settings → Pages → "Add a verified domain"
-  TXT("_github-pages-challenge-" + GH_USER, "CHANGEME"),
-
-  // --- Everything that exists today (from get-zones) goes below ---
-  // MX / SPF / DKIM / other TXT …
-END);
-```
-
-### Draft `dns/creds.json`
-
-```json
-{
-  "cloudflare": {
-    "TYPE": "CLOUDFLAREAPI",
-    "apitoken": "$CLOUDFLARE_API_TOKEN"
-  }
-}
-```
-
-## 6. Workflows (drafts)
-
-### `.github/workflows/site.yml` — build & deploy
-
-```yaml
-name: site
-on:
-  push:
-    branches: [main]
-    paths-ignore: ["dns/**", ".github/workflows/dns.yml", "README.md"]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Nicolino (pinned)
-        run: |
-          VER=$(cat .nicolino-version)
-          curl -fsSL -o /usr/local/bin/nicolino \
-            "https://github.com/ralsina/nicolino/releases/download/${VER}/nicolino-static-linux-amd64"
-          chmod +x /usr/local/bin/nicolino
-          nicolino --version
-
-      - name: Build
-        run: nicolino build
-
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: output/
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-Notes:
-- The workflow uses the **"GitHub Actions" Pages source**, not the legacy `gh-pages` branch,
-  so no build output is committed to the repo.
-- With the Actions source, a `CNAME` file in the output is **ignored**. The custom
-  domain is set in repo settings (see §8).
-- 🔧 TUNE: add a PR job that runs `nicolino build` without deploying, to catch
-  broken builds before merge. Optionally add a link checker such as `lychee`.
-- 🔧 TUNE: pin the actions by commit SHA and add a `sha256sum -c` check on the
-  binary if you want supply-chain hardening. Upstream doesn't publish checksums,
-  so you'd record the hash yourself when you bump the version.
-
-### `.github/workflows/dns.yml` — preview on PR, apply on main
-
-```yaml
-name: dns
-on:
-  pull_request:
-    paths: ["dns/**", ".github/workflows/dns.yml"]
-  push:
-    branches: [main]
-    paths: ["dns/**", ".github/workflows/dns.yml"]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pull-requests: write   # to comment the preview on the PR
-
-jobs:
-  dns:
-    runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'push' && 'dns-prod' || '' }}
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-    defaults:
-      run:
-        working-directory: dns
-    steps:
-      - uses: actions/checkout@v4
-
-      # Same image used locally; 🔧 pin a version tag (v5.2.0 at time of writing)
-      - name: Install DNSControl
-        run: |
-          printf '#!/bin/sh\n%s\n' 'exec docker run --rm -e CLOUDFLARE_API_TOKEN -v "$PWD:/dns" ghcr.io/dnscontrol/dnscontrol:5.2.0 "$@"' \
-            | sudo tee /usr/local/bin/dnscontrol >/dev/null
-          sudo chmod +x /usr/local/bin/dnscontrol
-
-      - run: dnscontrol check
-
-      - name: Preview
-        if: github.event_name == 'pull_request'
-        run: dnscontrol preview | tee preview.txt
-        # 🔧 TUNE: post preview.txt as a PR comment (e.g. marocchino/sticky-pull-request-comment)
-
-      - name: Push
-        if: github.event_name != 'pull_request'
-        run: dnscontrol push
-```
-
-- Branch protection on `main` plus a `dns-prod` **environment with required
-  reviewers** means DNS only changes after an explicit approval.
-- PRs from forks don't receive secrets, so preview only runs for your own branches. That's fine for a personal repo.
-
-## 7. Cloudflare specifics
-
-- **Proxy status (orange vs grey cloud).** 🔧 TUNE. Recommendation: **DNS-only
-  (grey)** for the GitHub Pages records.
-  - GitHub has to see its own IPs to issue and renew the Let's Encrypt cert.
-    If the records are proxied, cert issuance often fails and "Enforce HTTPS" stays greyed out.
-  - GitHub Pages already puts a CDN (Fastly) in front of the site, so Cloudflare's proxy adds little.
-  - If you want Cloudflare features (analytics, WAF, cache rules) later, turn on the proxy **after**
-    GitHub has issued the cert, set SSL mode to **Full (strict)**, and expect to
-    toggle it off occasionally when renewals fail. In DNSControl, the proxy is set per record with
-    `CF_PROXY_ON` / `CF_PROXY_OFF`.
-- **API token.** In Cloudflare → My Profile → API Tokens, create a *Custom token*:
-  - Permissions: `Zone → DNS → Edit` (and `Zone → Zone → Read`)
-  - Zone resources: *Include → Specific zone → marso.ar*
-  - Optional: a client IP filter isn't practical because GitHub runner IPs change
-  - Store it as the repo secret `CLOUDFLARE_API_TOKEN`, ideally scoped to the `dns-prod` environment
-- **Email.** If `marso.ar` receives mail (Cloudflare Email Routing or another
-  provider), make sure its MX, SPF and DKIM records are in `dnsconfig.js` **before** the first push (see §5).
-- **DNSSEC.** Cloudflare can manage it for `.ar` if NIC.ar has the DS record. It's independent of this setup.
-
-## 8. One-time manual steps ✋
-
-These are set once and rarely touched. They could be scripted with `gh api` and
-a PAT, but that isn't worth it.
-
-1. **Create the repo** 🔧 TUNE. Any repo name works with a custom domain.
-   Chosen: `3ll34ndr0/yo`.
-2. **Verify the domain in your GitHub account**: Settings → Pages → *Add a
-   verified domain* → `marso.ar`. Put the TXT value it gives you into `dnsconfig.js`.
-   This stops anyone else from pointing their Pages site at your domain.
-3. **Create the Cloudflare API token** (§7) and add it as a repo/environment secret.
-4. **Merge the DNS PR**, then wait for propagation. `dig marso.ar +short` should show the four 185.199.x.153 IPs.
-5. **Repo Settings → Pages**:
-   - Source: **GitHub Actions**
-   - Custom domain: `marso.ar` (or run: `gh api -X PUT repos/OWNER/REPO/pages -f cname=marso.ar`)
-   - After the cert is issued (minutes to about an hour): tick **Enforce HTTPS**
-6. **Repo Settings → Environments**: create `dns-prod` with yourself as required reviewer (optional but recommended).
-7. **Branch protection** on `main` (optional for a solo repo).
-
-## 9. Local workflow
+### Write / preview locally
 
 ```bash
-# install (same binary CI uses)
+# install the same binary CI uses
 curl -fsSL -o ~/.local/bin/nicolino \
-  https://github.com/ralsina/nicolino/releases/download/$(cat .nicolino-version)/nicolino-static-linux-amd64
+  "https://github.com/ralsina/nicolino/releases/download/$(cat .nicolino-version)/nicolino-static-linux-amd64"
 chmod +x ~/.local/bin/nicolino
 
-nicolino auto        # live rebuild + browser reload at http://localhost:8080
+nicolino auto                              # live rebuild at http://localhost:8080
 nicolino new content/posts/my-post.md
-git commit -am "new post" && git push   # CI builds and deploys
+git commit -am "new post" && git push      # CI builds and deploys
 ```
 
-## 10. Implementation phases
+### Change DNS
 
-| Phase | What | Done when |
-|-------|------|-----------|
-| 0 | Create repo, `nicolino init`, remove `pandoc` from features, set `title`/`url: https://marso.ar`, add `.gitignore` for `output/` | `nicolino build` works locally |
-| 1 | Add `site.yml`, Pages source = Actions | Site live at `https://CHANGEME.github.io/<repo>/` |
-| 2 | Cloudflare token + `dns/` with **imported** existing records; `dns.yml` preview only | PR shows a preview with only GitHub Pages additions |
-| 3 | Merge DNS, set custom domain, enforce HTTPS | `https://marso.ar` serves the site, `www` redirects |
-| 4 | Content & theme: home, about, CV/links, posts? | You're happy with it |
-| 5 | Nice-to-haves: PR build check, link checker, Dependabot for actions, a scheduled workflow that opens an issue when a new Nicolino release appears | — |
+1. Edit `dns/dnsconfig.js`.
+2. Optional local dry run:
+   ```bash
+   source .env
+   docker run --rm --user "$(id -u):$(id -g)" -e CLOUDFLARE_API_TOKEN \
+     -v "$PWD/dns:/dns" ghcr.io/dnscontrol/dnscontrol:5.2.0 preview
+   ```
+3. Push (ideally via a PR, which shows the preview), then approve the `dns-prod` job if it's gated.
 
-## 11. Open questions 🔧
+⚠️ Records **not** in `dnsconfig.js` are **deleted** on push. If you create something in
+the Cloudflare dashboard, add it to the file too, or the next push removes it.
+To re-import the live zone:
+```bash
+docker run --rm --user "$(id -u):$(id -g)" -e CLOUDFLARE_API_TOKEN -v "$PWD/dns:/dns" \
+  ghcr.io/dnscontrol/dnscontrol:5.2.0 get-zones --format=js --out=imported.js cloudflare marso.ar
+```
+DNSControl v5 syntax is `get-zones <credkey> <zone>`; v4 also took a provider argument.
+`dns/imported.js` is git-ignored.
 
-- [x] GitHub username / repo name? → `3ll34ndr0/yo`
-- [x] What's currently in the `marso.ar` zone? → 7 A + 2 SRV on subdomains, no apex, no MX (imported 2026-10-01)
-- [ ] Proxy through Cloudflare (orange) or DNS-only (grey)? Recommended: grey.
-- [ ] Site shape: single landing page, or landing plus blog? Galleries? Books (docs)?
-- [ ] Theme: default Nicolino theme with a [base16 color scheme](https://sixteen.ralsina.me/), or a custom theme?
-- [ ] Languages: Spanish, English or both? Nicolino supports `conf.es.yml` per-language overrides.
-- [ ] Should `www.marso.ar` exist, or the apex only?
-- [ ] Does the repo need to be public? Pages on a private repo needs a paid plan.
+### Upgrade tools
+
+- **Nicolino:** change `.nicolino-version`, build locally to check, push.
+- **DNSControl:** change the image tag in `dns.yml`. Tags have **no `v` prefix** (`5.2.0`, not `v5.2.0`).
+
+## 6. One-time setup (done ✅ / pending ⏳)
+
+1. ✅ Repo `3ll34ndr0/yo` created (public, empty)
+2. ✅ Settings → Pages → Source: **GitHub Actions**
+3. ✅ Secret `CLOUDFLARE_API_TOKEN` (repository level)
+4. ✅ Initial push, DNS records applied
+5. ✅ Settings → Pages → Custom domain: `marso.ar`
+6. ⏳ `www.marso.ar` check passing → tick **Enforce HTTPS**
+7. ⏳ Account Settings → Pages → **Add a verified domain** `marso.ar` → put the TXT value in
+   `dnsconfig.js` (line is there, commented) → push → approve → click **Verify**
+8. ⏳ (optional) Environment `dns-prod` with yourself as required reviewer
+
+## 7. Troubleshooting log
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `get-zones`: `creds.json entry missing TYPE field` | No `creds.json` in the mounted dir, token not passed with `-e`, v4 syntax used on v5 | Created `dns/creds.json`, use `-e CLOUDFLARE_API_TOKEN`, `get-zones cloudflare marso.ar` |
+| `nicolino build`: "pandoc feature enabled but pandoc is not installed" | Default config | Removed `pandoc` from `features:` |
+| `dns` job exit code **125** | Image tag `v5.2.0` doesn't exist | Use `5.2.0` |
+| GitHub: "DNS check unsuccessful … NotServedByPagesError" | DNS job had failed, so no records existed | Fixed the job, records pushed |
+| GitHub: "www.marso.ar is improperly configured" while `dig` shows the CNAME | Resolvers cached the earlier NXDOMAIN (Cloudflare SOA negative TTL = 1800 s) | Wait ~30 min, then "Check again" in Pages settings |
+| `dns/imported.js` owned by root | Docker writes as root | Add `--user "$(id -u):$(id -g)"` |
+
+## 8. Still open 🔧
+
+- [ ] Site shape: single landing page, or landing + blog? Galleries? Books (docs)?
+- [ ] Theme: default with a [base16 color scheme](https://sixteen.ralsina.me/) (`color_scheme:` in `conf.yml`), or custom?
+- [ ] Language: `es`, `en` or both (`conf.es.yml` per-language overrides)? Currently `en`.
+- [ ] Later Cloudflare proxy (orange) for analytics/WAF? It would need SSL **Full (strict)** and
+      may interfere with cert renewals. Not planned for now.
+- [ ] Nice-to-haves: link checker on PRs, Dependabot for actions (`actions/checkout@v4` already
+      warns about Node 20 deprecation), a scheduled check for new Nicolino releases,
+      pin actions by SHA, verify the Nicolino binary's sha256.
 
 ## References
 
 - Nicolino user guide: https://nicolino.ralsina.me/books/user-guide/
 - Nicolino releases: https://github.com/ralsina/nicolino/releases
 - GitHub Pages custom domains: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
-- GitHub Pages with Actions: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
+- Workflow path filters: https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore
 - DNSControl + Cloudflare: https://docs.dnscontrol.org/provider/cloudflareapi
