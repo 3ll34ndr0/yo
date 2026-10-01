@@ -24,7 +24,7 @@ D("marso.ar", REG_NONE,
 	// www redirects to apex (GitHub handles the redirect)
 	CNAME("www", GH_USER + ".github.io."),
 	// 🔧 Uncomment with the value from GitHub → Settings → Pages → "Add a verified domain"
-	// TXT("_github-pages-challenge-" + GH_USER, "CHANGEME"),
+	TXT("_github-pages-challenge-" + GH_USER, "d48d83ee9c94de5ef5d6bd8e1c18f5"),
 
 	// --- Pre-existing records (imported 2026-10-01 with get-zones) ---
 	A("argocd", "66.94.113.102"),
