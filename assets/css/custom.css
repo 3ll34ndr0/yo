@@ -17,6 +17,8 @@
 @media (max-width: 900px) {
   .home-grid { grid-template-columns: minmax(0, 1fr); }
 }
+.home-main { display: flex; flex-direction: column; gap: var(--pico-spacing, 1rem); min-width: 0; }
+.home-main > article, .home-grid > article { margin: 0; }
 .panel > header { margin-bottom: var(--pico-spacing, 1rem); }
 .contact-list, .profile-links { list-style: none; padding: 0; }
 .contact-list li, .profile-links li { list-style: none; }
@@ -49,3 +51,25 @@
 .gh-heatmap .l3, .gh-legend .l3 { fill: var(--gh-l3); background: var(--gh-l3); }
 .gh-heatmap .l4, .gh-legend .l4 { fill: var(--gh-l4); background: var(--gh-l4); }
 .gh-heatmap rect { outline: 1px solid rgba(127,127,127,.12); outline-offset: -1px; }
+
+/* ---------- Claude Code usage panel (scripts/claude_usage.py) ---------- */
+/* Bar color validated with the dataviz palette checker against each theme's surface */
+:root, [data-theme="dark"] { --cu-bar: #3987e5; }
+[data-theme="light"] { --cu-bar: #2a78d6; }
+.cu-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: .75rem; margin-bottom: 1rem;
+}
+.cu-stat b { display: block; font-size: 1.4rem; line-height: 1.2; }
+.cu-stat small { color: var(--pico-muted-color, #888); }
+.cu-chart { width: 100%; height: auto; display: block; }
+.cu-chart path { fill: var(--cu-bar); }
+.cu-chart .cu-hit { fill: transparent; }
+.cu-chart g:hover path { opacity: .75; }
+.cu-chart g:hover .cu-hit { fill: rgba(127,127,127,.12); }
+.cu-chart .cu-base { stroke: var(--pico-muted-border-color, #444); stroke-width: 1; }
+.cu-axis {
+  display: flex; justify-content: space-between;
+  font-size: .75rem; color: var(--pico-muted-color, #888); margin-top: .25rem;
+}
+.cu-mix, .cu-note { font-size: .8rem; color: var(--pico-muted-color, #888); margin: .5rem 0 0; }

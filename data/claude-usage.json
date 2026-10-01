@@ -1,0 +1,555 @@
+{
+ "generated_at": "2026-10-01T10:24:26-03:00",
+ "note": "Daily Claude Code usage per model. Cost = estimate at API list prices.",
+ "unpriced_models": [],
+ "days": {
+  "2026-07-09": {
+   "claude-sonnet-5": {
+    "input": 5774,
+    "output": 82828,
+    "cache_read": 4879870,
+    "cache_write": 152577,
+    "cost": 2.4261
+   }
+  },
+  "2026-07-10": {
+   "claude-sonnet-5": {
+    "input": 13797,
+    "output": 209437,
+    "cache_read": 54373125,
+    "cache_write": 2820015,
+    "cost": 24.2766
+   }
+  },
+  "2026-07-11": {
+   "claude-haiku-4-5-20251001": {
+    "input": 26,
+    "output": 395,
+    "cache_read": 21562,
+    "cache_write": 12191,
+    "cost": 0.0194
+   },
+   "claude-sonnet-5": {
+    "input": 7496,
+    "output": 105424,
+    "cache_read": 8276605,
+    "cache_write": 840256,
+    "cost": 6.0856
+   }
+  },
+  "2026-07-12": {
+   "claude-sonnet-5": {
+    "input": 141,
+    "output": 53482,
+    "cache_read": 7630452,
+    "cache_write": 272554,
+    "cost": 3.1514
+   }
+  },
+  "2026-07-13": {
+   "claude-sonnet-5": {
+    "input": 8,
+    "output": 5045,
+    "cache_read": 194447,
+    "cache_write": 40106,
+    "cost": 0.2498
+   }
+  },
+  "2026-07-14": {
+   "claude-sonnet-5": {
+    "input": 58,
+    "output": 23937,
+    "cache_read": 2027566,
+    "cache_write": 181535,
+    "cost": 1.3711
+   }
+  },
+  "2026-07-15": {
+   "claude-sonnet-5": {
+    "input": 50,
+    "output": 37100,
+    "cache_read": 2845423,
+    "cache_write": 114987,
+    "cost": 1.4001
+   }
+  },
+  "2026-07-16": {
+   "claude-sonnet-5": {
+    "input": 8,
+    "output": 4589,
+    "cache_read": 459767,
+    "cache_write": 125188,
+    "cost": 0.6386
+   }
+  },
+  "2026-07-17": {
+   "claude-sonnet-5": {
+    "input": 4,
+    "output": 2853,
+    "cache_read": 169717,
+    "cache_write": 129667,
+    "cost": 0.5811
+   }
+  },
+  "2026-07-20": {
+   "claude-sonnet-5": {
+    "input": 18,
+    "output": 21272,
+    "cache_read": 587928,
+    "cache_write": 53382,
+    "cost": 0.5439
+   }
+  },
+  "2026-07-21": {
+   "claude-sonnet-5": {
+    "input": 64,
+    "output": 52049,
+    "cache_read": 3224980,
+    "cache_write": 109791,
+    "cost": 1.6048
+   }
+  },
+  "2026-07-22": {
+   "claude-sonnet-5": {
+    "input": 10,
+    "output": 14863,
+    "cache_read": 229003,
+    "cache_write": 117972,
+    "cost": 0.6663
+   }
+  },
+  "2026-07-23": {
+   "claude-sonnet-5": {
+    "input": 4,
+    "output": 5320,
+    "cache_read": 103180,
+    "cache_write": 60904,
+    "cost": 0.3175
+   }
+  },
+  "2026-07-24": {
+   "claude-sonnet-5": {
+    "input": 24,
+    "output": 10280,
+    "cache_read": 1081995,
+    "cache_write": 88321,
+    "cost": 0.6725
+   }
+  },
+  "2026-07-27": {
+   "claude-sonnet-5": {
+    "input": 8,
+    "output": 7365,
+    "cache_read": 262614,
+    "cache_write": 188136,
+    "cost": 0.8787
+   }
+  },
+  "2026-07-28": {
+   "claude-sonnet-5": {
+    "input": 88,
+    "output": 66223,
+    "cache_read": 7510198,
+    "cache_write": 704129,
+    "cost": 4.981
+   }
+  },
+  "2026-07-29": {
+   "claude-sonnet-5": {
+    "input": 138,
+    "output": 62416,
+    "cache_read": 8106071,
+    "cache_write": 550025,
+    "cost": 4.4458
+   }
+  },
+  "2026-07-30": {
+   "claude-sonnet-5": {
+    "input": 477,
+    "output": 183599,
+    "cache_read": 31360816,
+    "cache_write": 656571,
+    "cost": 10.7354
+   }
+  },
+  "2026-07-31": {
+   "claude-sonnet-5": {
+    "input": 182,
+    "output": 95764,
+    "cache_read": 29756267,
+    "cache_write": 1252256,
+    "cost": 11.9183
+   }
+  },
+  "2026-08-03": {
+   "claude-sonnet-5": {
+    "input": 2,
+    "output": 3109,
+    "cache_read": 21316,
+    "cache_write": 307293,
+    "cost": 1.2645
+   }
+  },
+  "2026-08-05": {
+   "claude-sonnet-5": {
+    "input": 64,
+    "output": 15981,
+    "cache_read": 2093500,
+    "cache_write": 54297,
+    "cost": 0.7958
+   }
+  },
+  "2026-08-07": {
+   "claude-sonnet-5": {
+    "input": 66,
+    "output": 47497,
+    "cache_read": 3958141,
+    "cache_write": 218796,
+    "cost": 2.1419
+   }
+  },
+  "2026-08-10": {
+   "claude-sonnet-5": {
+    "input": 34,
+    "output": 7801,
+    "cache_read": 2639153,
+    "cache_write": 303265,
+    "cost": 1.819
+   }
+  },
+  "2026-08-18": {
+   "claude-sonnet-5": {
+    "input": 292,
+    "output": 108015,
+    "cache_read": 29454779,
+    "cache_write": 712366,
+    "cost": 9.8212
+   }
+  },
+  "2026-08-19": {
+   "claude-sonnet-5": {
+    "input": 76,
+    "output": 51446,
+    "cache_read": 13522290,
+    "cache_write": 1491894,
+    "cost": 9.1866
+   }
+  },
+  "2026-08-20": {
+   "claude-sonnet-5": {
+    "input": 240,
+    "output": 117439,
+    "cache_read": 60226054,
+    "cache_write": 2010112,
+    "cost": 21.2605
+   }
+  },
+  "2026-08-21": {
+   "claude-sonnet-5": {
+    "input": 250,
+    "output": 118067,
+    "cache_read": 86714844,
+    "cache_write": 2942734,
+    "cost": 30.2951
+   }
+  },
+  "2026-08-24": {
+   "claude-sonnet-5": {
+    "input": 16,
+    "output": 6641,
+    "cache_read": 4325858,
+    "cache_write": 2496763,
+    "cost": 10.9187
+   }
+  },
+  "2026-08-25": {
+   "claude-sonnet-5": {
+    "input": 420,
+    "output": 198163,
+    "cache_read": 76219945,
+    "cache_write": 1647287,
+    "cost": 23.8156
+   }
+  },
+  "2026-08-26": {
+   "claude-sonnet-5": {
+    "input": 362,
+    "output": 146922,
+    "cache_read": 65537188,
+    "cache_write": 1136414,
+    "cost": 19.123
+   }
+  },
+  "2026-08-27": {
+   "claude-sonnet-5": {
+    "input": 254,
+    "output": 118593,
+    "cache_read": 50629262,
+    "cache_write": 3293839,
+    "cost": 24.4876
+   }
+  },
+  "2026-08-28": {
+   "claude-sonnet-5": {
+    "input": 286,
+    "output": 133065,
+    "cache_read": 88917138,
+    "cache_write": 1848909,
+    "cost": 26.5103
+   }
+  },
+  "2026-08-29": {
+   "claude-sonnet-5": {
+    "input": 4,
+    "output": 3465,
+    "cache_read": 817477,
+    "cache_write": 821045,
+    "cost": 3.4823
+   }
+  },
+  "2026-08-31": {
+   "claude-sonnet-5": {
+    "input": 344,
+    "output": 149465,
+    "cache_read": 96106707,
+    "cache_write": 5764259,
+    "cost": 43.7737
+   }
+  },
+  "2026-09-01": {
+   "claude-sonnet-5": {
+    "input": 576,
+    "output": 217524,
+    "cache_read": 54884138,
+    "cache_write": 1223504,
+    "cost": 18.0472
+   }
+  },
+  "2026-09-02": {
+   "claude-sonnet-5": {
+    "input": 174,
+    "output": 78240,
+    "cache_read": 28825936,
+    "cache_write": 2367120,
+    "cost": 16.0164
+   }
+  },
+  "2026-09-03": {
+   "claude-sonnet-5": {
+    "input": 458,
+    "output": 246999,
+    "cache_read": 69396715,
+    "cache_write": 2826896,
+    "cost": 27.6578
+   }
+  },
+  "2026-09-04": {
+   "claude-sonnet-5": {
+    "input": 850,
+    "output": 354434,
+    "cache_read": 193546009,
+    "cache_write": 3947763,
+    "cost": 58.0463
+   }
+  },
+  "2026-09-07": {
+   "claude-sonnet-5": {
+    "input": 674,
+    "output": 291193,
+    "cache_read": 138312692,
+    "cache_write": 2281776,
+    "cost": 39.7029
+   }
+  },
+  "2026-09-08": {
+   "claude-sonnet-5": {
+    "input": 62,
+    "output": 19809,
+    "cache_read": 18764154,
+    "cache_write": 1902526,
+    "cost": 11.5611
+   }
+  },
+  "2026-09-09": {
+   "claude-sonnet-5": {
+    "input": 392,
+    "output": 167811,
+    "cache_read": 153277009,
+    "cache_write": 4409786,
+    "cost": 49.9734
+   }
+  },
+  "2026-09-10": {
+   "claude-sonnet-5": {
+    "input": 502,
+    "output": 216999,
+    "cache_read": 91233616,
+    "cache_write": 3136943,
+    "cost": 32.5527
+   }
+  },
+  "2026-09-11": {
+   "claude-sonnet-5": {
+    "input": 152,
+    "output": 67180,
+    "cache_read": 19156526,
+    "cache_write": 967898,
+    "cost": 8.3315
+   }
+  },
+  "2026-09-14": {
+   "claude-sonnet-5": {
+    "input": 558,
+    "output": 258735,
+    "cache_read": 57748904,
+    "cache_write": 2312971,
+    "cost": 22.9566
+   }
+  },
+  "2026-09-15": {
+   "claude-sonnet-5": {
+    "input": 392,
+    "output": 156959,
+    "cache_read": 49629324,
+    "cache_write": 1214282,
+    "cost": 16.3534
+   }
+  },
+  "2026-09-16": {
+   "claude-sonnet-5": {
+    "input": 390,
+    "output": 227424,
+    "cache_read": 89855876,
+    "cache_write": 5108323,
+    "cost": 40.6795
+   }
+  },
+  "2026-09-17": {
+   "claude-sonnet-5": {
+    "input": 352,
+    "output": 121102,
+    "cache_read": 31081651,
+    "cache_write": 3533134,
+    "cost": 21.5001
+   }
+  },
+  "2026-09-18": {
+   "claude-sonnet-5": {
+    "input": 360,
+    "output": 126941,
+    "cache_read": 41105343,
+    "cache_write": 691682,
+    "cost": 12.2579
+   }
+  },
+  "2026-09-21": {
+   "claude-sonnet-5": {
+    "input": 190,
+    "output": 83006,
+    "cache_read": 15853171,
+    "cache_write": 398358,
+    "cost": 5.5945
+   }
+  },
+  "2026-09-22": {
+   "claude-sonnet-5": {
+    "input": 330,
+    "output": 132642,
+    "cache_read": 41108615,
+    "cache_write": 1582404,
+    "cost": 15.8784
+   }
+  },
+  "2026-09-23": {
+   "claude-opus-5-5": {
+    "input": 386,
+    "output": 240676,
+    "cache_read": 28155465,
+    "cache_write": 560999,
+    "cost": 14.9341
+   },
+   "claude-sonnet-5": {
+    "input": 376,
+    "output": 145501,
+    "cache_read": 75328090,
+    "cache_write": 1129896,
+    "cost": 21.041
+   }
+  },
+  "2026-09-24": {
+   "claude-opus-5-5": {
+    "input": 52,
+    "output": 17004,
+    "cache_read": 935000,
+    "cache_write": 68472,
+    "cost": 1.0751
+   }
+  },
+  "2026-09-25": {
+   "claude-opus-5-5": {
+    "input": 102,
+    "output": 40854,
+    "cache_read": 3918885,
+    "cache_write": 308461,
+    "cost": 4.069
+   },
+   "claude-sonnet-5": {
+    "input": 28,
+    "output": 6241,
+    "cache_read": 1236930,
+    "cache_write": 140013,
+    "cost": 0.8124
+   }
+  },
+  "2026-09-28": {
+   "claude-opus-5-5": {
+    "input": 112,
+    "output": 57112,
+    "cache_read": 7519080,
+    "cache_write": 418221,
+    "cost": 5.9923
+   }
+  },
+  "2026-09-29": {
+   "claude-opus-5-5": {
+    "input": 42,
+    "output": 21514,
+    "cache_read": 1287073,
+    "cache_write": 238890,
+    "cost": 2.599
+   }
+  },
+  "2026-09-30": {
+   "claude-opus-5-5": {
+    "input": 78,
+    "output": 25889,
+    "cache_read": 5594715,
+    "cache_write": 452831,
+    "cost": 5.2597
+   },
+   "claude-sonnet-5": {
+    "input": 194,
+    "output": 103560,
+    "cache_read": 64637603,
+    "cache_write": 1484282,
+    "cost": 19.9006
+   }
+  },
+  "2026-10-01": {
+   "claude-opus-5-5": {
+    "input": 190,
+    "output": 71464,
+    "cache_read": 10540248,
+    "cache_write": 177972,
+    "cost": 4.9619
+   },
+   "claude-sonnet-5": {
+    "input": 40,
+    "output": 14728,
+    "cache_read": 15948743,
+    "cache_write": 812301,
+    "cost": 6.5863
+   }
+  }
+ }
+}

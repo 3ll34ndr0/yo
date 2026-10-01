@@ -1,13 +1,22 @@
 ---
-title: Hasme Admin
+title: ""
 ---
 
 <div class="home-grid">
+
+<div class="home-main">
 
 <article class="panel panel-activity">
 <header><strong>GitHub activity</strong></header>
 {{< shell "python3 scripts/contributions.py 3ll34ndr0" >}}
 </article>
+
+<article class="panel panel-usage">
+<header><strong>Claude Code usage</strong></header>
+{{< shell "python3 scripts/claude_usage.py render" >}}
+</article>
+
+</div>
 
 <article class="panel panel-contact">
 <header><strong>Contact</strong></header>

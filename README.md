@@ -22,6 +22,7 @@ code. GitHub Actions builds and deploys the site and applies DNS changes.
 | **Enforce HTTPS** ticked | ⏳ after the `www` check passes |
 | GitHub **verified domain** (TXT `_github-pages-challenge-3ll34ndr0`) | ⏳ TODO: get value from account Settings → Pages |
 | Home page: GitHub heatmap panel + contact/CV/links panel | ✅ built, contact data filled in; ⏳ add `assets/cv.pdf` |
+| Home page: Claude Code usage panel (under the heatmap) | ✅ built; refresh with `make usage` + commit |
 | Real content, theme, language | ⏳ TODO (see §8) |
 
 ## 2. Decisions made
@@ -39,6 +40,8 @@ code. GitHub Actions builds and deploys the site and applies DNS changes.
 | DNS approval gate | `push` job runs in environment **`dns-prod`** | Add a required reviewer there so DNS changes need a click |
 | Home page | Two panels (Pico CSS grid, stacked on mobile): **GitHub contribution heatmap** and **contact / CV download / GitHub + LinkedIn links** | |
 | Heatmap source | `scripts/contributions.py` fetches `github.com/users/3ll34ndr0/contributions` (the same fragment the profile page loads) and renders inline SVG, **at build time**, via Nicolino's `shell` shortcode | No token, no client-side JS, no third-party image service, and it follows the site's light/dark toggle. The endpoint is undocumented; the fallback is the GraphQL `contributionCalendar` API. If the fetch fails, the page shows a plain link and the build still passes |
+| Claude Code usage panel | **Option A: local logs.** `scripts/claude_usage.py export` reads `~/.claude/projects/**/*.jsonl` on the notebook and writes **daily totals per model** to `data/claude-usage.json` (committed). `render` draws the panel at build time from that file | CI can't reach the notebook or the company HOMER server. Local logs have exact token counts. The JSON holds only dates, model names and numbers: no prompts, projects or session ids |
+| Usage panel content | Last **90 days**: tokens (input + output + cache writes), cache reads, **estimated cost at API list prices** (labelled "API-equivalent"), active days, one bar per day, model mix | Hide dollars with `render --no-cost` in `content/index.md`. Prices live in `PRICES` in the script (checked 2026-10-01) |
 | Heatmap freshness | `site` workflow also runs **daily** (cron `17 6 * * *` UTC) | The heatmap is baked into static HTML |
 | Secrets | `CLOUDFLARE_API_TOKEN` as a **repository** secret (both DNS jobs use it). Locally it's in `.env`, which is **git-ignored** | Token scope: `Zone → DNS → Edit` on `marso.ar` only |
 
@@ -62,6 +65,7 @@ code. GitHub Actions builds and deploys the site and applies DNS changes.
 | You change… | `site` | `dns` |
 |-------------|:------:|:-----:|
 | `content/**`, `assets/**`, `themes/**`, `shortcodes/**`, `templates/**`, `user_templates/**`, `conf.yml`, `conf.*.yml`, `scripts/**`, `.nicolino-version`, `site.yml` | ✅ build (+ deploy on `main`) | — |
+| `data/**` (e.g. after `make usage`) | ✅ build + deploy | — |
 | *(nothing, daily at 06:17 UTC)* | ✅ build + deploy (refreshes heatmap) | — |
 | `dns/**`, `dns.yml` | — | ✅ preview (+ push on `main`) |
 | Anything else: `README.md`, `.gitignore`, … | — | — |
@@ -85,7 +89,11 @@ Details:
 ├── conf.yml                ← Nicolino config (title, url, features…)
 ├── .nicolino-version       ← pinned Nicolino version used by CI and locally
 ├── scripts/
-│   └── contributions.py    ← GitHub heatmap → inline SVG (run at build time)
+│   ├── contributions.py    ← GitHub heatmap → inline SVG (run at build time)
+│   └── claude_usage.py     ← export: ~/.claude logs → data/ (local) · render: panel (build time)
+├── data/
+│   └── claude-usage.json   ← daily Claude Code usage per model (committed)
+├── Makefile                ← make usage | preview | build | clean (local helpers)
 ├── content/
 │   ├── index.md            ← home page → / (heatmap + contact panels)
 │   ├── about.md            ← → /about.html
@@ -112,7 +120,7 @@ curl -fsSL -o ~/.local/bin/nicolino \
   "https://github.com/ralsina/nicolino/releases/download/$(cat .nicolino-version)/nicolino-static-linux-amd64"
 chmod +x ~/.local/bin/nicolino
 
-nicolino auto                              # live rebuild at http://localhost:8080
+make preview                              # clean + live rebuild at http://localhost:8080
 nicolino new content/posts/my-post.md
 git commit -am "new post" && git push      # CI builds and deploys
 ```
@@ -127,6 +135,22 @@ git commit -am "new post" && git push      # CI builds and deploys
 - ⚠️ Locally, Nicolino's incremental build **won't re-run the heatmap** unless
   `content/index.md` changes. Run `nicolino clean && nicolino build` to refresh it.
   CI always builds from scratch.
+
+### Claude Code usage panel
+
+```bash
+make usage        # = python3 scripts/claude_usage.py export && git add data/claude-usage.json
+git commit -m "data: refresh Claude usage" && git push
+```
+
+- Only this notebook's sessions are counted (other machines have their own `~/.claude`).
+- Log lines are de-duplicated per API response (each response is logged once per content block).
+- Cost = input/output/cache read/cache write (5m vs 1h) × the model's list price; Opus fast mode ×2.
+  New models print as "unpriced" on export: add them to `PRICES`.
+- Bar colors were validated for contrast and chroma against both theme surfaces
+  (`--cu-bar` in `custom.css`).
+- Optional automation: a user cron job such as
+  `0 21 * * * cd ~/Documentos/laburo/leandro && make usage && git commit -qm "data: refresh Claude usage" && git push -q`.
 
 ### Change DNS
 
@@ -185,6 +209,7 @@ DNSControl v5 syntax is `get-zones <credkey> <zone>`; v4 also took a provider ar
       in GitHub profile settings. Counts only, no repo names
 - [x] Per-repo activity? → No: the profile-wide heatmap (all contributions) is preferred
 - [x] Merge GitLab activity into the heatmap? → No, GitLab is almost abandoned; no GitLab link on the site either
+- [ ] Usage panel: keep the dollar estimate public? (`--no-cost` to hide) · automate `make usage` with cron?
 - [ ] Site shape beyond the home page: blog? Galleries? Books (docs)?
 - [ ] Theme: default with a [base16 color scheme](https://sixteen.ralsina.me/) (`color_scheme:` in `conf.yml`), or custom?
 - [ ] Language: `es`, `en` or both (`conf.es.yml` per-language overrides)? Currently `en`.
