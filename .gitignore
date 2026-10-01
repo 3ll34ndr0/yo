@@ -1,0 +1,11 @@
+# secrets
+.env
+
+# nicolino build output & caches
+output/
+.croupier
+.kvstore/
+.nicolino.lock
+
+# dnscontrol scratch
+dns/imported.js

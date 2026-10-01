@@ -1,0 +1,42 @@
+name: dns
+on:
+  pull_request:
+    paths: ["dns/**", ".github/workflows/dns.yml"]
+  push:
+    branches: [main]
+    paths: ["dns/**", ".github/workflows/dns.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dns
+  cancel-in-progress: false
+
+env:
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  DNSCONTROL_IMAGE: ghcr.io/dnscontrol/dnscontrol:v5.2.0
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: check + preview
+        run: |
+          dc() { docker run --rm -e CLOUDFLARE_API_TOKEN -v "$PWD/dns:/dns" "$DNSCONTROL_IMAGE" "$@"; }
+          dc check
+          dc preview
+
+  push:
+    if: github.event_name != 'pull_request'
+    needs: preview
+    runs-on: ubuntu-latest
+    # Add required reviewers to this environment to gate DNS changes behind an approval
+    environment: dns-prod
+    steps:
+      - uses: actions/checkout@v4
+      - name: push
+        run: |
+          docker run --rm -e CLOUDFLARE_API_TOKEN -v "$PWD/dns:/dns" "$DNSCONTROL_IMAGE" push

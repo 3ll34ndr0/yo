@@ -1,0 +1,17 @@
+{#-
+  taxonomy.tmpl - Taxonomy index template
+
+  Renders a simple list of taxonomy terms (e.g., tags, categories):
+  - Links to each term's index page
+
+  Variables:
+  - taxonomy: Taxonomy object with terms array
+    (each term has name, slug and posts)
+
+  Used by: Taxonomy feature for taxonomy index pages (e.g., /tags/)
+-#}
+<ul>
+    {% for term in taxonomy.terms %}
+    <li><a href="{{term.slug}}/index.html">{{term.name}}</a></li>
+    {% endfor %}
+</ul>
