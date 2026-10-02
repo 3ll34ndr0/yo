@@ -115,3 +115,21 @@
 .posts-list a { display: block; }
 .posts-list time { display: block; font-size: .8rem; color: var(--pico-muted-color, #888); }
 .posts-more { margin: .75rem 0 0; font-size: .9rem; }
+
+/* ---------- Projects panel (scripts/projects_list.py) ---------- */
+.projects-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); }
+.projects-list > li { list-style: none; }
+.proj-card { display: flex; flex-direction: column; gap: .5rem; padding: 1rem;
+  border: 1px solid var(--pico-muted-border-color, #383838); border-radius: .5rem; }
+.proj-head { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+.proj-title { font-weight: 700; }
+.proj-status { font-size: .75rem; white-space: nowrap; color: var(--pico-muted-color, #888); }
+.proj-status.is-up::first-letter { color: #2ea043; }
+.proj-status.is-down::first-letter { color: #d1242f; }
+.proj-summary { margin: 0; font-size: .9rem; }
+.proj-stack { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .35rem; }
+.proj-stack li { list-style: none; font-size: .72rem; padding: .1rem .5rem; border-radius: 1rem;
+  border: 1px solid var(--pico-muted-border-color, #383838); color: var(--pico-muted-color, #888); }
+.proj-links { display: flex; align-items: center; gap: 1rem; margin-top: auto; font-size: .9rem; }
+.proj-links [role="button"] { padding: .35rem .9rem; font-size: .85rem; }

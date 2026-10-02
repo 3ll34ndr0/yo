@@ -6,6 +6,11 @@ title: ""
 
 <div class="home-main">
 
+<article class="panel panel-projects">
+<header><strong>Projects</strong></header>
+{{< shell "python3 scripts/projects_list.py" >}}
+</article>
+
 <article class="panel panel-activity">
 <header><strong>GitHub activity</strong></header>
 {{< shell "python3 scripts/contributions.py 3ll34ndr0" >}}

@@ -9,3 +9,6 @@ output/
 
 # dnscontrol scratch
 dns/imported.js
+
+# python
+__pycache__/
