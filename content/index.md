@@ -18,7 +18,7 @@ title: ""
 
 <article class="panel panel-usage">
 <header><strong>Claude Code usage</strong></header>
-{{< shell "python3 scripts/claude_usage.py render" >}}
+{{< shell "python3 scripts/claude_usage.py render --no-cost" >}}
 </article>
 
 </div>

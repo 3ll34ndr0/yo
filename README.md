@@ -43,7 +43,7 @@ code. GitHub Actions builds and deploys the site and applies DNS changes.
 | Home page | Two panels (Pico CSS grid, stacked on mobile): **GitHub contribution heatmap** and **contact / CV download / GitHub + LinkedIn links** | |
 | Heatmap source | `scripts/contributions.py` fetches `github.com/users/3ll34ndr0/contributions` (the same fragment the profile page loads) and renders inline SVG, **at build time**, via Nicolino's `shell` shortcode | No token, no client-side JS, no third-party image service, and it follows the site's light/dark toggle. The endpoint is undocumented; the fallback is the GraphQL `contributionCalendar` API. If the fetch fails, the page shows a plain link and the build still passes |
 | Claude Code usage panel | **Option A: local logs.** `scripts/claude_usage.py export` reads `~/.claude/projects/**/*.jsonl` on the notebook and writes **daily totals per model** to `data/claude-usage.json` (committed). `render` draws the panel at build time from that file | CI can't reach the notebook or the company HOMER server. Local logs have exact token counts. The JSON holds only dates, model names and numbers: no prompts, projects or session ids |
-| Usage panel content | Last **90 days**: tokens (input + output + cache writes), cache reads, **estimated cost at API list prices** (labelled "API-equivalent"), active days, one bar per day, model mix | Hide dollars with `render --no-cost` in `content/index.md`. Prices live in `PRICES` in the script (checked 2026-10-01) |
+| Usage panel content | Last **90 days**: tokens (input + output + cache writes), cache reads, active days, one bar per day, model mix by tokens. **No dollar figures** (`render --no-cost`) | The API-list-price estimate (~$800) read like a bill, but usage is covered by the flat Claude Pro subscription. `render` without `--no-cost` brings it back; prices are in `PRICES` |
 | Heatmap freshness | `site` workflow also runs **daily** (cron `17 6 * * *` UTC) | The heatmap is baked into static HTML |
 | Secrets | `CLOUDFLARE_API_TOKEN` as a **repository** secret (both DNS jobs use it). Locally it's in `.env`, which is **git-ignored** | Token scope: `Zone → DNS → Edit` on `marso.ar` only |
 
@@ -251,7 +251,8 @@ DNSControl v5 syntax is `get-zones <credkey> <zone>`; v4 also took a provider ar
       in GitHub profile settings. Counts only, no repo names
 - [x] Per-repo activity? → No: the profile-wide heatmap (all contributions) is preferred
 - [x] Merge GitLab activity into the heatmap? → No, GitLab is almost abandoned; no GitLab link on the site either
-- [ ] Usage panel: keep the dollar estimate public? (`--no-cost` to hide) · automate `make usage` with cron?
+- [x] Usage panel dollar estimate → hidden (tokens only)
+- [ ] Usage panel: automate `make usage` with cron?
 - [ ] Site shape beyond the home page: blog? Galleries? Books (docs)?
 - [ ] Theme: default with a [base16 color scheme](https://sixteen.ralsina.me/) (`color_scheme:` in `conf.yml`), or custom?
 - [ ] Language: `es`, `en` or both (`conf.es.yml` per-language overrides)? Currently `en`.
