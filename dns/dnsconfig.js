@@ -28,8 +28,11 @@ D("marso.ar", REG_NONE,
 
 	// --- Pre-existing records (imported 2026-10-01 with get-zones) ---
 	A("argocd", "66.94.113.102"),
+	A("planka", "66.94.113.102"), // Planka on k3s (3ll34ndr0/planka-k8s); DNS-only for cert-manager HTTP-01
 	A("fer", "154.53.46.23"),
 	A("odoo", "66.94.113.102"),
+    // Estudio Marsó (temporario)
+	CNAME("estudio", "estudio-marso.vercel.app."),
 	A("prvsn", "154.53.46.23"),
 	A("sms.fer", "154.53.46.23"),
 	A("t", "66.94.113.102", CF_PROXY_ON),
