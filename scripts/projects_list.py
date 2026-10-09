@@ -4,6 +4,7 @@
 Called at build time from content/index.md via the `shell` shortcode.
 Each project file's front matter provides:
   title, summary, date   card text and order (newest first)
+  order                  optional number: lower comes first, before projects without it
   app                    where "Open" points (external URL or a local /apps/... page)
   repo                   optional source link
   stack                  optional, comma-separated tech list
@@ -46,6 +47,7 @@ def main():
         print('<p class="projects-empty">No projects yet.</p>')
         return
     projects.sort(key=lambda p: (p["_date"], p["slug"]), reverse=True)
+    projects.sort(key=lambda p: float(p.get("order") or "inf"))  # stable: date order within ties
 
     with concurrent.futures.ThreadPoolExecutor() as pool:
         status = dict(zip(

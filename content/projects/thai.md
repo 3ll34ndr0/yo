@@ -1,6 +1,7 @@
 ---
 title: Thai read-aloud practice
 date: 2026-09-22
+order: 2
 summary: Read a Thai sentence aloud and get a pronunciation score from speech-to-text.
 app: https://t.marso.ar
 repo: https://github.com/3ll34ndr0/thai-practice
