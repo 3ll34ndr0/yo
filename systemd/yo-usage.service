@@ -1,0 +1,13 @@
+# Installed by `make usage-timer`. Logs: journalctl --user -u yo-usage
+[Unit]
+Description=Push Claude Code usage data to marso.ar
+# Retries below: at most 5 tries in 2 hours
+StartLimitIntervalSec=2h
+StartLimitBurst=5
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/yo-push-usage
+# e.g. the timer fired on resume before the network was up
+Restart=on-failure
+RestartSec=10min

@@ -22,7 +22,7 @@ code. GitHub Actions builds and deploys the site and applies DNS changes.
 | **Enforce HTTPS** ticked | ⏳ after the `www` check passes |
 | GitHub **verified domain** (TXT `_github-pages-challenge-3ll34ndr0`) | ⏳ TODO: get value from account Settings → Pages |
 | Home page: GitHub heatmap panel + contact/CV/links panel | ✅ built, contact data filled in; ⏳ add `assets/cv.pdf` |
-| Home page: Claude Code usage panel (under the heatmap) | ✅ built; refresh with `make usage` + commit |
+| Home page: Claude Code usage panel (under the heatmap) | ✅ built; refreshed daily by a systemd user timer (`make usage-timer`) |
 | Home page: Posts panel (under Contact) | ✅ latest 5 posts + link to `/posts/` |
 | Home page: Projects panel (main column, under Claude Code usage) | ✅ step 1 of the apps plan (§9): cards link to the live apps |
 | Real content, theme, language | ⏳ TODO (see §8) |
@@ -93,11 +93,13 @@ Details:
 ├── scripts/
 │   ├── contributions.py    ← GitHub heatmap → inline SVG (run at build time)
 │   ├── claude_usage.py     ← export: ~/.claude logs → data/ (local) · render: panel (build time)
+│   ├── push_usage.sh       ← daily export + commit + push, run by the systemd timer
 │   ├── posts_list.py       ← latest posts for the home page (build time)
 │   └── projects_list.py    ← Projects panel cards + live/down check (build time)
 ├── data/
 │   └── claude-usage.json   ← daily Claude Code usage per model (committed)
-├── Makefile                ← make usage | preview | build | clean (local helpers)
+├── systemd/                ← yo-usage.{service,timer}: daily usage push (make usage-timer)
+├── Makefile                ← make usage | usage-timer | preview | build | clean (local helpers)
 ├── content/
 │   ├── index.md            ← home page → / (heatmap + contact panels)
 │   ├── about.md            ← → /about.html
@@ -164,7 +166,8 @@ Create `content/projects/<name>.md`:
 ```yaml
 ---
 title: Thai read-aloud practice
-date: 2026-09-22                     # card order, newest first
+date: 2026-09-22                     # card order, newest first (after `order`)
+order: 2                             # optional: lower comes first; cards with it go before those without
 summary: One line for the home-page card.
 app: https://t.marso.ar              # "Open" button (external URL or /apps/<name>/)
 repo: https://github.com/3ll34ndr0/thai-practice   # optional "Code" link
@@ -190,8 +193,18 @@ git commit -m "data: refresh Claude usage" && git push
   New models print as "unpriced" on export: add them to `PRICES`.
 - Bar colors were validated for contrast and chroma against both theme surfaces
   (`--cu-bar` in `custom.css`).
-- Optional automation: a user cron job such as
-  `0 21 * * * cd ~/Documentos/laburo/leandro && make usage && git commit -qm "data: refresh Claude usage" && git push -q`.
+- **Automated daily** by a systemd user timer (`make usage-timer` installs it; idempotent, re-run after
+  editing `scripts/push_usage.sh` or `systemd/`):
+  - 21:00 local (`Persistent=true`: runs at the next boot/resume if missed; retries every 10 min on failure).
+  - Runs `~/.local/bin/yo-push-usage` (a copy of `scripts/push_usage.sh`) in its **own clone**
+    `~/.local/share/yo-usage`, hard-reset to `origin/main` each run, so it never touches this working copy.
+  - Commits `data: refresh Claude usage` only if the numbers changed (ignores `generated_at`); the push
+    touches `data/**`, so `site` rebuilds. Daily commits also keep the scheduled workflow from being
+    auto-disabled after 60 days.
+  - Pushes with a repo-only **deploy key** `~/.ssh/yo_usage_deploy` (no passphrase, write access,
+    GitHub → repo Settings → Deploy keys), set as `core.sshCommand` in the clone.
+  - Check: `systemctl --user list-timers yo-usage` · logs: `journalctl --user -u yo-usage` ·
+    run now: `systemctl --user start yo-usage`.
 
 ### Change DNS
 
@@ -252,7 +265,7 @@ DNSControl v5 syntax is `get-zones <credkey> <zone>`; v4 also took a provider ar
 - [x] Per-repo activity? → No: the profile-wide heatmap (all contributions) is preferred
 - [x] Merge GitLab activity into the heatmap? → No, GitLab is almost abandoned; no GitLab link on the site either
 - [x] Usage panel dollar estimate → hidden (tokens only)
-- [ ] Usage panel: automate `make usage` with cron?
+- [x] Usage panel: automate `make usage`? → systemd user timer, 21:00 (`make usage-timer`)
 - [ ] Site shape beyond the home page: blog? Galleries? Books (docs)?
 - [ ] Theme: default with a [base16 color scheme](https://sixteen.ralsina.me/) (`color_scheme:` in `conf.yml`), or custom?
 - [ ] Language: `es`, `en` or both (`conf.es.yml` per-language overrides)? Currently `en`.

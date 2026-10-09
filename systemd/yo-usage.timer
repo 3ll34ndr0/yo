@@ -1,0 +1,12 @@
+# Installed by `make usage-timer`. Check: systemctl --user list-timers yo-usage
+[Unit]
+Description=Daily Claude Code usage refresh for marso.ar
+
+[Timer]
+OnCalendar=*-*-* 21:00
+# Run at the next boot/resume if the notebook was off or asleep at 21:00
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target
