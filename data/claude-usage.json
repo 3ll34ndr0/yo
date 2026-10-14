@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-09T09:02:07-03:00",
+ "generated_at": "2026-10-14T09:33:25-03:00",
  "note": "Daily Claude Code usage per model. Cost = estimate at API list prices.",
  "unpriced_models": [],
  "days": {
@@ -318,83 +318,56 @@
   },
   "2026-09-01": {
    "claude-sonnet-5": {
-    "input": 576,
-    "output": 217524,
-    "cache_read": 54884138,
-    "cache_write": 1223504,
-    "cost": 18.0472
+    "input": 2,
+    "output": 637,
+    "cache_read": 29155,
+    "cache_write": 80058,
+    "cost": 0.3324
    }
   },
   "2026-09-02": {
    "claude-sonnet-5": {
-    "input": 174,
-    "output": 78240,
-    "cache_read": 28825936,
-    "cache_write": 2367120,
-    "cost": 16.0164
+    "input": 8,
+    "output": 17338,
+    "cache_read": 413517,
+    "cache_write": 146773,
+    "cost": 0.8432
    }
   },
   "2026-09-03": {
    "claude-sonnet-5": {
-    "input": 458,
-    "output": 246999,
-    "cache_read": 69396715,
-    "cache_write": 2826896,
-    "cost": 27.6578
+    "input": 2,
+    "output": 3297,
+    "cache_read": 0,
+    "cache_write": 147529,
+    "cost": 0.6231
    }
   },
   "2026-09-04": {
    "claude-sonnet-5": {
-    "input": 800,
-    "output": 338979,
-    "cache_read": 191920146,
-    "cache_write": 3899722,
-    "cost": 57.3743
-   }
-  },
-  "2026-09-07": {
-   "claude-sonnet-5": {
-    "input": 620,
-    "output": 275181,
-    "cache_read": 136637887,
-    "cache_write": 2230776,
-    "cost": 39.0037
-   }
-  },
-  "2026-09-08": {
-   "claude-sonnet-5": {
-    "input": 62,
-    "output": 19809,
-    "cache_read": 18764154,
-    "cache_write": 1902526,
-    "cost": 11.5611
-   }
-  },
-  "2026-09-09": {
-   "claude-sonnet-5": {
-    "input": 392,
-    "output": 167811,
-    "cache_read": 153277009,
-    "cache_write": 4409786,
-    "cost": 49.9734
+    "input": 50,
+    "output": 20615,
+    "cache_read": 2485008,
+    "cache_write": 100514,
+    "cost": 1.1053
    }
   },
   "2026-09-10": {
    "claude-sonnet-5": {
-    "input": 502,
-    "output": 216999,
-    "cache_read": 91233616,
-    "cache_write": 3136943,
-    "cost": 32.5527
+    "input": 170,
+    "output": 54353,
+    "cache_read": 16396030,
+    "cache_write": 562658,
+    "cost": 6.0737
    }
   },
   "2026-09-11": {
    "claude-sonnet-5": {
-    "input": 152,
-    "output": 67180,
-    "cache_read": 19156526,
-    "cache_write": 967898,
-    "cost": 8.3315
+    "input": 142,
+    "output": 55406,
+    "cache_read": 18927346,
+    "cache_write": 917278,
+    "cost": 7.9655
    }
   },
   "2026-09-14": {
@@ -605,11 +578,47 @@
   },
   "2026-10-09": {
    "claude-opus-5-5": {
-    "input": 124,
-    "output": 56333,
-    "cache_read": 5492406,
-    "cache_write": 150508,
-    "cost": 3.4297
+    "input": 448,
+    "output": 217748,
+    "cache_read": 33109284,
+    "cache_write": 1135770,
+    "cost": 20.0648
+   }
+  },
+  "2026-10-10": {
+   "claude-opus-5-5": {
+    "input": 130,
+    "output": 40480,
+    "cache_read": 8695440,
+    "cache_write": 285260,
+    "cost": 4.8313
+   }
+  },
+  "2026-10-11": {
+   "claude-opus-5-5": {
+    "input": 140,
+    "output": 63102,
+    "cache_read": 8823406,
+    "cache_write": 318394,
+    "cost": 5.5744
+   }
+  },
+  "2026-10-13": {
+   "claude-opus-5-5": {
+    "input": 142,
+    "output": 83261,
+    "cache_read": 9303425,
+    "cache_write": 440889,
+    "cost": 7.0536
+   }
+  },
+  "2026-10-14": {
+   "claude-opus-5-5": {
+    "input": 62,
+    "output": 26914,
+    "cache_read": 18739166,
+    "cache_write": 1100465,
+    "cost": 13.0901
    }
   }
  }
