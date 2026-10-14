@@ -188,6 +188,8 @@ git commit -m "data: refresh Claude usage" && git push
 ```
 
 - Only this notebook's sessions are counted (other machines have their own `~/.claude`).
+- `export` **merges** with the committed file (per day and model, the larger value wins): Claude Code
+  deletes session logs after ~30 days (`cleanupPeriodDays`), so rebuilding from the logs alone lost old days.
 - Log lines are de-duplicated per API response (each response is logged once per content block).
 - Cost = input/output/cache read/cache write (5m vs 1h) × the model's list price; Opus fast mode ×2.
   New models print as "unpriced" on export: add them to `PRICES`.

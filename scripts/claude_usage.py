@@ -5,8 +5,9 @@ Two subcommands:
 
   export   Run LOCALLY (needs ~/.claude). Reads Claude Code session logs
            (~/.claude/projects/**/*.jsonl), de-duplicates messages, and writes
-           daily totals per model to data/claude-usage.json. Only dates, model
-           names and numbers are written: no prompts, projects or session ids.
+           daily totals per model to data/claude-usage.json, MERGED with what the
+           file already has (old logs get deleted). Only dates, model names and
+           numbers are written: no prompts, projects or session ids.
 
   render   Run at BUILD time (from content/index.md via the `shell` shortcode).
            Reads data/claude-usage.json and prints the panel HTML. Needs no
@@ -111,6 +112,19 @@ def export(args):
         if u.get("speed") == "fast":
             cost *= FAST_MULTIPLIER
         row["cost"] += cost
+
+    # Claude Code deletes session logs after ~30 days (cleanupPeriodDays), so old days would
+    # shrink or vanish on every export. Merge with the file instead: while its logs exist a
+    # day's numbers only grow, so per day and model keep the larger value of each field.
+    if os.path.exists(args.out):
+        with open(args.out) as f:
+            stored = json.load(f)
+        for day, models in stored.get("days", {}).items():
+            for model, row in models.items():
+                cur = days[day][model]
+                for k, v in row.items():
+                    cur[k] = max(cur.get(k, 0), v)
+        unpriced |= {m for d in days.values() for m in d if price_for(m) is None}
 
     out = {
         "generated_at": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
