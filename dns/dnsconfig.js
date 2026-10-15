@@ -37,6 +37,7 @@ D("marso.ar", REG_NONE,
 	A("sms.fer", "154.53.46.23"),
 	A("t", "66.94.113.102", CF_PROXY_ON),
 	A("extractos", "66.94.113.102", CF_PROXY_ON), // Extractos on k3s (3ll34ndr0/redo); proxied: Cloudflare gives HTTPS
+	A("lectura", "66.94.113.102", CF_PROXY_ON), // Lectura on k3s (3ll34ndr0/lectura): Spanish speech-to-text; proxied: Cloudflare gives HTTPS
 	A("xn--tailands-h1a", "66.94.113.102", CF_PROXY_ON), // tailandés
 	SRV("_sip._udp.prueba", 0, 5, 5060, "sbc-usw.delightvoip.com."),
 	SRV("_sip._udp.prueba", 0, 5, 5060, "couch2-usw.delightvoip.com."),
