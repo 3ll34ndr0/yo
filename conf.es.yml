@@ -1,0 +1,13 @@
+# Spanish overrides for conf.yml (only translatable settings).
+# Pages in Spanish are content/<name>.es.md → <name>.es.html.
+
+description: "Página personal de Leandro"
+footer: "© marso.ar - Hecho con <a href='https://nicolino.ralsina.me/'>Nicolino</a>"
+
+locale: "es_AR.UTF-8"
+
+taxonomies:
+  tags:
+    title: "🏷Etiquetas"
+    term_title: "Posts con la etiqueta {{term.name}}"
+    location: "tags/"
