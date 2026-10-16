@@ -1,11 +1,11 @@
 ---
-title: Extractos
+title: unaudio
 date: 2026-04-17
 order: 1
 summary: Search a phrase from a Redondos song and get the exact clip where it's sung. Also my end-to-end DevOps playground, with real users.
-app: https://extractos.marso.ar
+app: https://unaudio.marso.ar
 repo: https://github.com/3ll34ndr0/redo
-status: https://extractos.marso.ar/healthz
+status: https://unaudio.marso.ar/healthz
 stack: Flask, Kubernetes (k3s), Argo CD, Grafana, OpenTelemetry, Trivy, OpenTofu
 ---
 
@@ -13,11 +13,11 @@ Type a phrase from a song by Patricio Rey y sus Redonditos de Ricota and get an
 audio clip of exactly the moment it's sung, ready to play, download or share.
 The index covers 101 songs and about 14,600 sung words, each with its timing.
 
-**[Open the app ↗](https://extractos.marso.ar)** · [Source code](https://github.com/3ll34ndr0/redo)
+**[Open the app ↗](https://unaudio.marso.ar)** · [Source code](https://github.com/3ll34ndr0/redo)
 
 ## Why I built it
 
-Extractos is my **end-to-end DevOps project**: one real application taken all the way
+unaudio (formerly Extractos) is my **end-to-end DevOps project**: one real application taken all the way
 from a commit to production on Kubernetes, with GitOps, observability and security
 built in from the start rather than added later.
 
