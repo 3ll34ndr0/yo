@@ -14,7 +14,7 @@
 -#}
 <!DOCTYPE html>
 
-<html lang="en" data-theme="dark">
+<html lang="{{ lang }}" data-theme="dark">
 
 <head>
   <meta charset="utf-8" />
@@ -25,6 +25,14 @@
   <meta name="description" content="{% if description %}{{ description }}{% else %}{{ site_description }}{% endif %}" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="canonical" href="{{ canonical_url }}" />
+  {% if language_links and language_links|length > 0 %}
+  {#- This page in other languages. hreflang wants absolute URLs: site_url
+      (minus any trailing slash; Crinja has no rstrip) plus the root-relative link -#}
+  <link rel="alternate" hreflang="{{ lang }}" href="{{ canonical_url }}" />
+  {% for l in language_links %}
+  <link rel="alternate" hreflang="{{ l.lang }}" href="{{ (site_url ~ '|') | replace('/|', '') | replace('|', '') }}{{ l.link | replace('/index.html', '/') }}" />
+  {% endfor %}
+  {% endif %}
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="{% if og_type %}{{ og_type }}{% else %}website{% endif %}" />
   <meta property="og:site_name" content="{{ site_title }}" />

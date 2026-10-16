@@ -17,6 +17,19 @@ import re
 
 POSTS = "content/posts"
 FM_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.S)
+DEFAULT_LANG = "en"  # conf.yml `language`
+LANG_RE = re.compile(r"\.([a-z]{2})\.md$")  # foo.es.md → "es"; foo.md has none
+
+
+def is_translation(path):
+    """True for another language's version (foo.es.md); foo.md and foo.en.md are the default."""
+    m = LANG_RE.search(path)
+    return bool(m) and m.group(1) != DEFAULT_LANG
+
+
+def slug(path):
+    """foo.md / foo.en.md → "foo", the name Nicolino gives the default-language page."""
+    return LANG_RE.sub("", os.path.basename(path)).removesuffix(".md")
 
 
 def front_matter(path):
@@ -46,14 +59,16 @@ def main():
 
     posts = []
     for path in glob.glob(os.path.join(POSTS, "*.md")):
+        if is_translation(path):
+            continue
         meta = front_matter(path)
         if meta.get("draft", "").lower() in ("true", "yes", "1"):
             continue
         date = parse_date(meta.get("date", ""))
         if not date:
             continue
-        slug = os.path.splitext(os.path.basename(path))[0]
-        posts.append((date, meta.get("title") or slug, slug))
+        name = slug(path)
+        posts.append((date, meta.get("title") or name, name))
     # Newest first. Same-day posts: give them a time ("date: 2026-10-01 18:30")
     # to control the order; otherwise the file name decides (deterministic in CI).
     posts.sort(key=lambda p: (p[0], p[2]), reverse=True)
@@ -62,9 +77,9 @@ def main():
         print('<p class="posts-empty">No posts yet.</p>')
         return
     items = "".join(
-        f'<li><a href="/posts/{html.escape(slug)}.html">{html.escape(title)}</a>'
+        f'<li><a href="/posts/{html.escape(name)}.html">{html.escape(title)}</a>'
         f'<time datetime="{date:%Y-%m-%d}">{date:%b %d, %Y}</time></li>'
-        for date, title, slug in posts[: args.limit]
+        for date, title, name in posts[: args.limit]
     )
     more = f'<p class="posts-more"><a href="/posts/">All posts ({len(posts)}) →</a></p>'
     # Single line: blank lines would make the Markdown parser split the HTML

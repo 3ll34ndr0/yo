@@ -19,7 +19,7 @@ import html
 import os
 import urllib.request
 
-from posts_list import front_matter, parse_date  # same folder
+from posts_list import front_matter, is_translation, parse_date, slug  # same folder
 
 PROJECTS = "content/projects"
 
@@ -37,10 +37,12 @@ def check(url):
 def main():
     projects = []
     for path in glob.glob(os.path.join(PROJECTS, "*.md")):
+        if is_translation(path):
+            continue
         meta = front_matter(path)
         if meta.get("draft", "").lower() in ("true", "yes", "1"):
             continue
-        meta["slug"] = os.path.splitext(os.path.basename(path))[0]
+        meta["slug"] = slug(path)
         meta["_date"] = parse_date(meta.get("date", "")) or parse_date("1970-01-01")
         projects.append(meta)
     if not projects:

@@ -64,6 +64,9 @@ image_thumb: 640
 
 # Default language
 language: "en"
+# Untranslated pages get no Spanish copy (instead of the English text under an
+# .es URL with lang="es"); translations are content/<name>.es.md
+content_fallback: false
 
 # What extensions you want associated with what pandoc format.
 # For more details: https://pandoc.org/MANUAL.html#option--from
