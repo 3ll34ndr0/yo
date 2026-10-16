@@ -37,6 +37,7 @@ D("marso.ar", REG_NONE,
 	A("sms.fer", "154.53.46.23"),
 	A("t", "66.94.113.102", CF_PROXY_ON),
 	A("unaudio", "66.94.113.102", CF_PROXY_ON), // unaudio (formerly Extractos) on k3s (3ll34ndr0/redo); proxied: Cloudflare gives HTTPS
+	A("unaudio-dev", "66.94.113.102", CF_PROXY_ON), // unaudio staging: redo's development branch (k8s-dev/)
 	A("extractos", "66.94.113.102", CF_PROXY_ON), // old name of unaudio: Traefik redirects every URL to unaudio.marso.ar (redo k8s/ingress.yaml)
 	A("lectura", "66.94.113.102", CF_PROXY_ON), // Lectura on k3s (3ll34ndr0/lectura): Spanish speech-to-text; proxied: Cloudflare gives HTTPS
 	A("xn--tailands-h1a", "66.94.113.102", CF_PROXY_ON), // tailandés
