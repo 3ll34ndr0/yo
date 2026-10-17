@@ -2,7 +2,7 @@
 title: Lectura
 date: 2026-10-15
 order: 3
-summary: Press a button, speak Spanish, read what you said. A speech-to-text page built in one afternoon on top of an existing pipeline.
+summary: Press a button, speak Spanish, read what you said. A speech-to-text page that took 5 minutes of my time, on top of an existing pipeline.
 app: https://lectura.marso.ar
 repo: https://github.com/3ll34ndr0/lectura
 status: https://lectura.marso.ar/healthz
@@ -17,9 +17,9 @@ the whole app.
 
 ## How easy it was
 
-Lectura went from idea to live in 5 minutes, from the first commit to the
-first real transcription on [lectura.marso.ar](https://lectura.marso.ar). Almost none of that time
-went into infrastructure, because the infrastructure already existed:
+Getting Lectura from idea to live on [lectura.marso.ar](https://lectura.marso.ar) took about
+5 minutes of my attention and work. Almost none of it went into infrastructure, because the
+infrastructure already existed:
 
 - **The app was a copy, not a rewrite.** The [Thai practice app](thai.html) already
   recorded audio in the browser and sent it to a speech-to-text API. Lectura keeps that
