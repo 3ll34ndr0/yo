@@ -17,7 +17,7 @@ the whole app.
 
 ## How easy it was
 
-Lectura went from idea to live in one afternoon, from the first commit to the
+Lectura went from idea to live in 5 minutes, from the first commit to the
 first real transcription on [lectura.marso.ar](https://lectura.marso.ar). Almost none of that time
 went into infrastructure, because the infrastructure already existed:
 
@@ -32,12 +32,21 @@ went into infrastructure, because the infrastructure already existed:
 - **The domain was one line.** DNS for marso.ar is code (DNSControl), so `lectura.marso.ar`
   was a single `A` record in one commit. Cloudflare proxies it and provides HTTPS.
 - **The manual steps were a handful of one-time clicks and commands:** create the GitHub
-  repo, make the container image public, apply the Argo CD Application, and create the
+  repo, apply the Argo CD Application, and create the
   Kubernetes Secret with the Orchardrun API key by hand on the cluster, so it never touches git.
 
-I built it with [Claude Code](https://claude.com/claude-code) as a pair: I described
+I built it with Claude Code as a pair: I described
 what I wanted (the button, the Spanish wording, the clear-and-record-again behaviour)
 and reviewed each step, and the reusable pieces above did the rest.
+
+This is the prompt that started it:
+
+> OK, now let's create a new project based on the thai language transcription. But it's
+> for spanish ASR. The fqdn will be lectura.marso.ar and the frontend will provide a
+> button (in spanish language all the site) to push to talk, and then send it to the
+> orchard api and write the text reconized. That's it. Next time user push the button,
+> the former text is deleted and new voice is being recorded  until stoped and send
+> again to orchard api.
 
 ## What's inside
 
