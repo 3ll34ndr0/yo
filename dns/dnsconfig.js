@@ -3,6 +3,7 @@
 
 var REG_NONE = NewRegistrar("none");
 var DSP_CLOUDFLARE = NewDnsProvider("cloudflare");
+var DSP_CLOUDFLARE_UNAUDIO_AR = NewDnsProvider("cloudflare_unaudio_ar"); // its own token, scoped to that zone only
 
 var GH_USER = "3ll34ndr0"; // 🔧 your GitHub username
 
@@ -43,4 +44,14 @@ D("marso.ar", REG_NONE,
 	A("xn--tailands-h1a", "66.94.113.102", CF_PROXY_ON), // tailandés
 	SRV("_sip._udp.prueba", 0, 5, 5060, "sbc-usw.delightvoip.com."),
 	SRV("_sip._udp.prueba", 0, 5, 5060, "couch2-usw.delightvoip.com."),
+);
+
+// unaudio.ar: for now a TEMPORARY redirect to unaudio.marso.ar (answered by Traefik on k3s:
+// redo k8s/unaudio-ar.yaml); later a service of its own. Proxied: Cloudflare gives HTTPS.
+D("unaudio.ar", REG_NONE,
+	DnsProvider(DSP_CLOUDFLARE_UNAUDIO_AR),
+	DefaultTTL(1),
+
+	A("@", "66.94.113.102", CF_PROXY_ON),
+	A("www", "66.94.113.102", CF_PROXY_ON),
 );

@@ -2,5 +2,9 @@
   "cloudflare": {
     "TYPE": "CLOUDFLAREAPI",
     "apitoken": "$CLOUDFLARE_API_TOKEN"
+  },
+  "cloudflare_unaudio_ar": {
+    "TYPE": "CLOUDFLAREAPI",
+    "apitoken": "$CLOUDFLARE_API_TOKEN_UNAUDIO_AR"
   }
 }
