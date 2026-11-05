@@ -44,3 +44,13 @@ D("marso.ar", REG_NONE,
 	SRV("_sip._udp.prueba", 0, 5, 5060, "sbc-usw.delightvoip.com."),
 	SRV("_sip._udp.prueba", 0, 5, 5060, "couch2-usw.delightvoip.com."),
 );
+
+// unaudio.ar: for now a TEMPORARY redirect to unaudio.marso.ar (answered by Traefik on k3s:
+// redo k8s/unaudio-ar.yaml); later a service of its own. Proxied: Cloudflare gives HTTPS.
+D("unaudio.ar", REG_NONE,
+	DnsProvider(DSP_CLOUDFLARE),
+	DefaultTTL(1),
+
+	A("@", "66.94.113.102", CF_PROXY_ON),
+	A("www", "66.94.113.102", CF_PROXY_ON),
+);
