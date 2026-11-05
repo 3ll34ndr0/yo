@@ -1,0 +1,6 @@
+# unaudio.marso.ar footer: one of these sentences at random on every page.
+# One per line; lines starting with # and blank lines are skipped. Plain text (no HTML).
+# The site re-reads this file every 5 minutes (raw.githubusercontent.com caches up to ~5 more): no deploy.
+Lo esencial es invisible a los ojos
+Lo poco agrada, lo mucho enfada
+¿Sabían que Almacén Don Manolo vende baratísimo?...
