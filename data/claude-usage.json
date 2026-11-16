@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T09:55:16-03:00",
+ "generated_at": "2026-11-15T22:47:48-03:00",
  "note": "Daily Claude Code usage per model. Cost = estimate at API list prices.",
  "unpriced_models": [
   "claude-haiku-5-5"
@@ -889,11 +889,11 @@
   },
   "2026-11-15": {
    "claude-opus-5-5": {
-    "input": 10,
-    "output": 1944,
-    "cache_read": 376647,
-    "cache_write": 72906,
-    "cost": 0.6975
+    "input": 44,
+    "output": 5593,
+    "cache_read": 1696409,
+    "cache_write": 79002,
+    "cost": 1.0833
    }
   }
  }
